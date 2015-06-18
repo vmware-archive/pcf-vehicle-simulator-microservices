@@ -45,7 +45,7 @@ The URL to access this service when running locally is http://localhost:<port>/n
 
 ### DealerService
 A GoLang service that puts a lightweight wrapper around the Edmunds Web Services (http://developer.edmunds.com/)
-	Requires an API Key (sign up for one above)
+	Requires an API Key (sign up for one at the URL listed above)
 	
 	Environment variables needed: 
 	PORT - which port the service should run on
@@ -105,6 +105,6 @@ The url to access this service when running locally is http://localhost:<port>/f
     "baseMSRP": 18960,
     "imageUrl": "http:\/\/assets.forddirect.fordvehicles.com\/assets\/2015_Ford_Focus_J1\/NGBS\/Model_Image3\/Model_Image3_136B520A-19F5-6A18-59C1-84CF59C184CF.jpg"
   },
-  // additional sytles
+  // additional styles
 ]
 ```
