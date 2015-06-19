@@ -1,0 +1,7 @@
+---
+applications:
+  - name: dealerservice
+    memory: 256M
+    instances: 1
+    env:
+      EDMUNDS_API_KEY: <PUT YOUR KEY HERE> 

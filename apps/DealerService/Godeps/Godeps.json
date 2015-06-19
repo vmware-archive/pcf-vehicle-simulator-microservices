@@ -1,0 +1,18 @@
+{
+	"ImportPath": "local/DealerService",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/goinggo/tracelog",
+			"Rev": "5a49782e876292c815b3d90c71dfa227f0ad6fbd"
+		},
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "47e8f450ef38c857cdd922ec08862ca9d65a1c6d"
+		}
+	]
+}
