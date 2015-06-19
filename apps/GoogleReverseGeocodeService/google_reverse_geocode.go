@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"errors"
 	"bytes"
+	"github.com/goinggo/tracelog"
 )
 
 type AddressComponent struct {
@@ -92,7 +93,7 @@ func googleReverseGeocodeQueryStr(lat float64, lng float64) (string, error) {
 		}
 	}
 	
-	// log.Print("The query string is ", queryStr.String()); 
+	tracelog.Trace("Query String", "googleReverseGeocodeQueryStr", queryStr.String())
 
 	return queryStr.String(), err
 }

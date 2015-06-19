@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"log"
+	"github.com/goinggo/tracelog"
 	"strconv"
 	"net/http"
 	"github.com/gorilla/mux"
@@ -37,20 +37,22 @@ var routes = Routes{
 }
 
 func main() {
-	log.Print("Starting Google Reverse Geocode Service..");
-	var port = os.Getenv("PORT");
-	
+    tracelog.Start(tracelog.LevelInfo)
+    
+	var port = os.Getenv("PORT");	
 	if port == "" {
-		log.Fatal("The PORT environment variable has not been set.");
+   		tracelog.Error(nil, "The PORT environment variable has not been set.", "main")
+		os.Exit(1)
 	}
 	
 	var mapsApiKey = os.Getenv("GOOGLE_MAPS_API_KEY")
 	if mapsApiKey == "" {
-		log.Fatal("The GOOGLE_MAPS_API_KEY environment variable has not been set.")
+		tracelog.Error(nil, "The GOOGLE_MAPS_API_KEY enviornment variable has not been set.", "main")
+		os.Exit(2)
 	}
 	SetGoogleAPIKey(mapsApiKey)
 		
-	log.Print("Google Reverse Geocode Service is starting and listening on port ", port);
+	tracelog.Info("Started", "main", "Google Reverse Geocode Service is starting and listening on port %s", port)
 	
 	router := mux.NewRouter()
 	for _, route := range routes {
@@ -64,10 +66,12 @@ func main() {
 		
 	err := http.ListenAndServe(":" + port, router)
 	if err != nil {
-		log.Fatal("An error occurred while attempting to listen and serve: ", err)
+	    tracelog.Error(err, "An error occurred while attempting to listen and serve.", "main")
+	    os.Exit(3)
 	}
 	
-	log.Print("Google Reverse Geocode Service has been terminated")
+	tracelog.Info("Stopped", "main", "Google Reverse Geocode Service has been terminated")
+	tracelog.Stop()
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -86,46 +90,41 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	log.Print("Lat is ", lat);
-	log.Print("Lng is ", lng);
-	postalCode, postaCodeErr := LatLngToPostalCode(lat, lng);
+	tracelog.Trace("Lat Value", "main", "Lat is %f", lat)
+	tracelog.Trace("Lng Value", "main", "Lng is %f", lng)
+	
+	postalCode, postaCodeErr := ReverseGeocodeToPostalCode(lat, lng);
 	if postaCodeErr != nil {
 		ReturnErrorToClient(w, postaCodeErr, "Error determining zip code from given coordinates")
-		
 		return
 	}
 	
-	log.Print("Postal Code is ", postalCode)
+	tracelog.Trace("Postal Code Value", "main", "Postal Code is %s", postalCode)
 	var response = GeocodeResponse{ postalCode }
 	
 	w.WriteHeader(http.StatusOK)
 	var err error
 	if err = json.NewEncoder(w).Encode(response); err != nil {
+	    tracelog.Error(err, "An error occurred while encoding json response", "NearbyHandler")
 		panic(err)
 	}
 }
 
-func LatLngToPostalCode(lat float64, lng float64) (postalCode string, err error) {
-	postCode, err := ReverseGeocodeToPostalCode( lat, lng )
-	
-	return postCode, err
-}
+func ReturnErrorToClient(w http.ResponseWriter, err error, msg string) {	
+	tracelog.Error(err, msg, "ReturnErrorToClient")
 
-func ReturnErrorToClient(w http.ResponseWriter, err error, msg string) {
-	
-	log.Println("An error occurred: ",msg, err)
-	
 	w.WriteHeader(http.StatusBadRequest)
 	
 	if encodeError := json.NewEncoder(w).Encode(JsonError{Code: http.StatusBadRequest, Error: msg}); encodeError != nil {
-		log.Panic(encodeError);
+	    tracelog.Error(encodeError, "JSON encoding failed", "ReturnErrorToClient")
+		panic("JSON encoding failed")
 	}
 }
 
 func Logger(inner http.Handler, name string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		
-		log.Printf(
+		tracelog.Info("HTTP Request", "Handler",
 			"%s\t%s\t%s",
 			r.Method,
 			r.RequestURI,
