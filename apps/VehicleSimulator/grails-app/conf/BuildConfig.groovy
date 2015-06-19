@@ -64,7 +64,7 @@ grails.project.dependency.resolution = {
 		
 		// plugins added for the Ford Demo
 		compile ":google-visualization:0.7"
-		compile ':rabbitmq-native:3.1.0'
+		compile ':rabbitmq-native:3.1.0' 
 
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.8.1" // or ":hibernate:3.6.10.18"
