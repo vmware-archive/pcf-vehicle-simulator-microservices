@@ -1,6 +1,6 @@
 ---
 applications:
-  - name: dealerservice
+  - name: dealer-service
     memory: 256M
     instances: 1
     env:
