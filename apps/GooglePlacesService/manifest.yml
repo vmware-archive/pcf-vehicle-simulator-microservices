@@ -1,0 +1,7 @@
+---
+applications:
+  - name: google-places-service 
+    memory: 256M
+    instances: 1
+    env:
+      GOOGLE_PLACES_API_KEY: <YOUR KEY HERE> 

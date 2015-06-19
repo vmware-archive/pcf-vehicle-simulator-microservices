@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"errors"
 	"bytes"
-	"log"
+	"github.com/goinggo/tracelog"
 )
 
 type GooglePlacesResponse struct {
@@ -105,7 +105,7 @@ func googlePlacesQueryStr(placeType string, lat float64, lng float64) (string, e
 		}
 	}
 	
-	log.Print("The query string is ", queryStr.String()); 
+	tracelog.Trace("Query String", "googlePlacesQueryStr", queryStr.String())
 
 	return queryStr.String(), err
 }

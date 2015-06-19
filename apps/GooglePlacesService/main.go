@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"log"
+	"github.com/goinggo/tracelog"
 	"strconv"
 	"net/http"
 	"github.com/gorilla/mux"
@@ -37,20 +37,22 @@ var routes = Routes{
 }
 
 func main() {
-	log.Print("Starting Google Places Service..");
+    tracelog.Start(tracelog.LevelInfo)
 	var port = os.Getenv("PORT");
 	
 	if port == "" {
-		log.Fatal("The PORT environment variable has not been set.");
+		tracelog.Error(nil, "The PORT environment variable has not been set.", "main")
+		os.Exit(1)
 	}
 	
 	var placesApiKey = os.Getenv("GOOGLE_PLACES_API_KEY")
 	if placesApiKey == "" {
-		log.Fatal("The GOOGLE_PLACES_API_KEY environment variable has not been set.")
+	    tracelog.Error(nil, "The GOOGLE_PLACES_API_KEY enviornment variable has not been set.", "main")
+		os.Exit(2)
 	}
 	SetGoogleAPIKey(placesApiKey)
 		
-	log.Print("Google Places Service is starting and listening on port ", port);
+	tracelog.Info("Started", "main", "Google Places Service is starting and listening on port %s", port);
 	
 	router := mux.NewRouter()
 	for _, route := range routes {
@@ -64,10 +66,11 @@ func main() {
 		
 	err := http.ListenAndServe(":" + port, router)
 	if err != nil {
-		log.Fatal("An error occurred while attempting to listen and serve: ", err)
+	    tracelog.Error(err, "An error occurred while attempting to listen and serve.", "main")
 	}
 	
-	log.Print("Google Places Service has been terminated")
+	tracelog.Info("Stopped", "main", "Google Places Service has been terminated")
+	tracelog.Stop()
 }
 
 func NearbyHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,9 +92,9 @@ func NearbyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	log.Print("Type is ", placeType)
-	log.Print("Lat is ", lat)
-	log.Print("Lng is ", lng)
+	tracelog.Trace("Type Value","main", "Type is %s", placeType);
+	tracelog.Trace("Lat Value", "main", "Lat is %f", lat)
+	tracelog.Trace("Lng Value", "main", "Lng is %f", lng)
 
 	response, nearbyErr := NearbySearch( placeType, lat, lng )
 	if nearbyErr != nil {
@@ -102,25 +105,27 @@ func NearbyHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	var err error
 	if err = json.NewEncoder(w).Encode(response); err != nil {
+		tracelog.Error(err, "An error occurred while encoding json response", "NearbyHandler")
 		panic(err)
 	}
 }
 
 func ReturnErrorToClient(w http.ResponseWriter, err error, msg string) {
 	
-	log.Println("An error occurred: ",msg, err)
+	tracelog.Error(err, msg, "ReturnErrorToClient")
 	
 	w.WriteHeader(http.StatusBadRequest)
 	
 	if encodeError := json.NewEncoder(w).Encode(JsonError{Code: http.StatusBadRequest, Error: msg}); encodeError != nil {
-		log.Panic(encodeError);
+		tracelog.Error(encodeError, "JSON encoding failed", "ReturnErrorToClient")
+		panic("JSON encoding failed")
 	}
 }
 
 func Logger(inner http.Handler, name string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		
-		log.Printf(
+		tracelog.Info("HTTP Request", "Handler",
 			"%s\t%s\t%s",
 			r.Method,
 			r.RequestURI,
