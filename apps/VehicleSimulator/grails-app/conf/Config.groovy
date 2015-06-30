@@ -89,16 +89,6 @@ environments {
     development {
         grails.logging.jul.usebridge = true
 		
-		rabbitmq {
-			connection = {
-				connection host: "tiger.cloudamqp.com", virtualHost: "dzmmizcc", username: "dzmmizcc", password: "v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM"
-			}
-			queues = {
-				queue name: "vehicle-data-queue", durable: true
-			}
-			autoStart = false
-		}
-
     }
     production {
         grails.logging.jul.usebridge = false
