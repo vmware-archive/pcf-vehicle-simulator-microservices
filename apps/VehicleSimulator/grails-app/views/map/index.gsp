@@ -18,6 +18,13 @@
     <!-- TODO: move key out of the HTML -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBywCGRuSOk1a0hJed2vOn3lZH6OIZbQ0E"
             type="text/javascript"></script>
+            
+    <g:javascript>
+    	window.grailsSupport = {
+    		assetsRoot : '${ raw(asset.assetPath(src: '')) }'
+    	};
+    </g:javascript>
+    
     <script type="text/javascript">
 
     function initialize() 
@@ -30,6 +37,9 @@
         var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     }
     google.maps.event.addDomListener(window, 'load', initialize);
+
+    // TODO: consider not hardcoding this
+    var BRAND = "ford";
     
     </script>
   </head>
@@ -90,17 +100,21 @@
                	latlngStr = data.latitude + ", " + data.longitude;
                	
                	// update the Google Map
-               addLatLngToMap( data.latitude, data.longitude);
+               var map = addLatLngToNewMap( data.latitude, data.longitude);
 
                // find the nearest gas stations
-               callNearestGasSations( data.latitude, data.longitude, nearestGasStationSuccessCallback, nearestGasStationErrorCallback)
+               callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback)
+
+               // find the nearest dealerships
+               callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback)
+               
             }
 
             $( "#tcLatLng").html( latlngStr );
         	        	
         }
 
-        function addLatLngToMap( latitude, longitude)
+        function addLatLngToNewMap( latitude, longitude)
         {
             console.debug("adding latlng to map");
             
@@ -120,6 +134,8 @@
             }
 
             var marker = new google.maps.Marker( markerOptions );
+
+            return map;
         }
 
         function vehicleInfoErrorCallback( jqXHR, textStatus, errorThrown)
@@ -140,28 +156,51 @@
                 });
         }
 
-        function nearestGasStationSuccessCallback( data, textStatus, jqXHR )
+        function nearestDealershipErrorCallback(jqXHR, textStatus, errorThrown)
         {
-            console.debug("nearestGasStationSuccessCallback()");
-            console.debug( data );
-            console.debug("textstatus...")
-            console.debug( textStatus );
-            console.debug("jqXHR...");
-            console.debug( jqXHR );
-            console.debug("typeOf data....");
+            // TODO: show an alert??
+            console.debug("(nearestDealership) An error occurred");
+            console.debug( jqXHR, textStatus, errorThrown );   
+        }
 
-            console.debug("----- data----")
-            console.debug(typeof data);
-            console.debug(data);
-            console.debug("----- data[0]----")
-            console.debug(typeof data[0]);
-            console.debug(data[0]);
-            console.debug("----- data[0][0]----")
-            console.debug(typeof data[0][0]);
-            console.debug(data[0][0]);
+        function callNearestDealerships(map, brand, lat, lng, errorCallback)
+        {
+			console.debug("Calling the nearest dealerships service")
+			var theUrl = 'map/nearestDealerships?brand=' + brand + '&lat=' + lat + "&lng=" + lng
+            console.debug('The url is ' + theUrl);
 
-    
-           // console.debug(jsonObj);
+            $.ajax({
+                url: theUrl,
+                type: 'GET',
+                cache: false,
+                success: function (data, textStatus, jqXHR) {
+                    console.debug("nearestDealershipSuccessCallback()");
+                    console.debug(data);
+
+                    var iconUrl = window.grailsSupport.assetsRoot + 'dealership.png';
+
+					console.debug('the icon url is ' + iconUrl);
+                    
+                    console.debug("There are " + data.dealers.length + " dealerships nearby");
+                    
+                    for(var i=0; i<data.dealers.length;i++)
+                    {
+                        var dealership = data.dealers[i];
+
+                        console.debug("Adding dealership " + dealership.name + " to the map (" + dealership.address.latitude + ", " + dealership.address.longitude + ")");
+
+                        var title = dealership.name + "\n" + 
+                        	dealership.address.street + ", " + dealership.address.city + ", " + dealership.address.stateCode + " " + dealership.address.zipCode;
+
+                        addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, title); 
+                    }
+                    
+                },
+                error: errorCallback
+            
+            });
+			// TODO: Implement
+           
         }
 
         function nearestGasStationErrorCallback( jqXHR, textStatus, errorThrown)
@@ -171,7 +210,30 @@
             console.debug( jqXHR, textStatus, errorThrown );            
         }
 
-        function callNearestGasSations(lat, lng, successCallback, errorCallback)
+        function addMarkerToMap(map, lat, lng, iconUrl, title)
+        {
+            var latlng = new google.maps.LatLng ( lat, lng );
+            
+            var mapIcon = {
+                    url: iconUrl,
+                    size: new google.maps.Size(71,71),
+                    orign: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(50,50)
+            
+            }
+
+            var markerOptions = {
+                    icon: mapIcon,
+                    position: latlng,
+                    title: title,
+                    map: map
+            }
+
+            var marker = new google.maps.Marker( markerOptions );
+        }
+
+        function callNearestGasSations(map, lat, lng, errorCallback)
         {
             console.debug("Calling the nearest gas station service")
             var theUrl = 'map/nearestGasStations?lat=' + lat + "&lng=" + lng
@@ -180,12 +242,31 @@
             $.ajax({
                 url: theUrl,
                 type: 'GET',
-                contentType: 'application/json',
-                xhrFields: {
-                    withCredentials: false
-                },
                 cache: false,
-                success: successCallback,
+                success: function (data, textStatus, jqXHR) {
+
+                    console.debug("nearestGasStationSuccessCallback()");
+                    console.debug( data );
+                    console.debug("textstatus...")
+                    console.debug( textStatus );
+                    console.debug("jqXHR...");
+                    console.debug( jqXHR );
+
+                    var iconUrl = window.grailsSupport.assetsRoot + 'gasstation.png';
+                    
+                    console.debug('the icon url is ' + iconUrl);
+                    
+                    console.debug("There are " + data.length + " gas stations nearby");
+                    
+                    for(var i=0; i<data.length;i++)
+                    {
+                        var gasStation = data[i];
+
+                        console.debug("Adding gas station " + gasStation.Name + " to the map. (" + gasStation.Lat + ", " + gasStation.Lng + ")");
+
+                        addMarkerToMap(map, gasStation.Lat, gasStation.Lng, iconUrl, gasStation.Name + "\n" + gasStation.Address + "\n");
+                    }
+                },
                 error: errorCallback
             })
         }  

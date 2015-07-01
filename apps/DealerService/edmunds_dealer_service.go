@@ -22,6 +22,8 @@ type EdmundsDealerResponse struct {
 			StateCode	string	`json:"stateCode"`
 			StateName	string	`json:"stateName"`
 			ZipCode		string	`json:"zipcode"`
+			Latitude	float32 `json:"latitude"`
+			Longitude   float32 `json:"longitude"`
 		} 						`json:"address"`
 		Operations 	struct {
 			Monday		string

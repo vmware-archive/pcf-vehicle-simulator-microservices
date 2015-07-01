@@ -54,6 +54,8 @@ class MapController {
 		println "Latitude, Longitude is ${lat}, ${lng}"
 
 		def restBuilder = new RestBuilder()
+		
+		// TODO: don't hardcode this
 		def url = 'http://google-places-service.cfapps.io/nearby/gas_station/' + lat + '/' + lng
 		
 		println "The google places URL is ${url}" 
@@ -62,6 +64,40 @@ class MapController {
 		
 		println "The response is ${response.json}"
 		
-		render response.json
+		render response.json as JSON
+	}
+	
+	def nearestDealerships()
+	{
+		println "Nearest Dealerships"
+		
+		def lat = params.lat
+		def lng = params.lng
+		def brand = params.brand
+		
+		println "Latitude, Longitude is ${lat}, ${lng}. Brand is {$brand}"
+		
+		// first we need to get the zip code...
+		def restBuilder = new RestBuilder()
+		
+		// TODO: don't hardcode this
+		def url = 'http://google-reverse-geocode-service.cfapps.io/' + lat + '/' + lng
+		
+		println "The reverse geo URL is {$url}"
+		
+		def response = restBuilder.get(url)
+		
+		def postalCode = response.json.postalCode
+		
+		// TODO: make sure postalCode is okay and if not, return an error
+		
+		// TODO: don't hardcode this
+		def dealerUrl = 'http://dealer-service.cfapps.io/' + brand + '/' + postalCode
+		def rest = new RestBuilder();
+		def dealerResponse = rest.get(dealerUrl);
+		
+		println "The dealer response (JSON) is {$dealerResponse.json}"
+		
+		render dealerResponse.json as JSON
 	}
 }
