@@ -7,6 +7,12 @@
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="grails-app/controllers"/>
+	<classpathentry kind="src" path="grails-app/services"/>
+	<classpathentry kind="src" path="grails-app/taglib"/>
+	<classpathentry kind="src" path="grails-app/conf"/>
+	<classpathentry kind="src" path="grails-app/utils"/>
+	<classpathentry kind="src" path="grails-app/domain"/>
 	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-2.1.5/grails-app/services">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
@@ -148,6 +154,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="con" path="org.grails.ide.eclipse.core.CLASSPATH_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.grails.ide.eclipse.core.CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="target-eclipse/classes"/>
 </classpath>

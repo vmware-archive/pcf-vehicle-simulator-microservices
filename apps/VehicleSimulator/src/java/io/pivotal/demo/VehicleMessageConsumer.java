@@ -22,6 +22,24 @@ public class VehicleMessageConsumer
 		this.rabbitQueueName = queueName;
 	}
 	
+	public VehicleMessageConsumer() { }
+	
+	public String getUri() {
+		return rabbitUri;
+	}
+	
+	public void setUri(String uri) {
+		rabbitUri = uri;
+	}
+	
+	public String getQueueName() {
+		return rabbitQueueName;
+	}
+	
+	public void setQueueName(String queueName) {
+		rabbitQueueName = queueName;
+	}
+	
 	public void openConnection()
 	{
 		if (rabbitConnection == null)

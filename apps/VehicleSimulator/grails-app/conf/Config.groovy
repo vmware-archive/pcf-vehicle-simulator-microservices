@@ -88,13 +88,21 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
-		
     }
     production {
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
     }
 }
+
+io.pivotal.demo.rabbitmq.uri = "amqp://dzmmizcc:v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM@tiger.cloudamqp.com/dzmmizcc"
+io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
+
+io.pivotal.demo.google.geocode.url = "http://google-reverse-geocode-service.cfapps.io/"
+io.pivotal.demo.google.places.gas.url = "http://google-places-service.cfapps.io/nearby/gas_station/"
+io.pivotal.demo.dealer.service.url = "http://dealer-service.cfapps.io/"
+
+
 
 // log4j configuration
 log4j.main = {

@@ -4,7 +4,10 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Google Maps JavaScript API Example</title>
     <style type="text/css">
-      html, body, #map-canvas { height: 90%; margin: 0; padding: 0;}, #vehicle-data { padding: 5px; background-color: #eeeeee;}
+      html, body, #map-canvas { height: 90%; margin: 0; padding: 0;}
+      
+      #map-canvas {width: 50%; float: left;}
+      #vehicle-data { padding: 5px; background-color: #eeeeee; width: 45%; float: left;}
       
       .rTable 					{ display: table; width: 100%; } 
       .rTableRow 				{ display: table-row; } 
@@ -52,7 +55,8 @@
   			<div class="message">${flash.message}</div>
   		</g:if>
   	</div>
-    <div id="map-canvas"></div>
+    <div id="map-canvas">
+    </div>
     <div id="vehicle-data">
     	<div class="rTable">
     		<div class="rTableRow">
