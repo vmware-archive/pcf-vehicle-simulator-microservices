@@ -89,14 +89,6 @@ environments {
     development {
         grails.logging.jul.usebridge = true
 		
-		rabbitmq {
-			connection = {
-				connection host: "tiger.cloudamqp.com", virtualHost: "dzmmizcc", username: "dzmmizcc", password: "v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM"
-			}
-			queues = {
-				queue name: "vehicle-data-queue"
-			}
-		}
     }
     production {
         grails.logging.jul.usebridge = false
@@ -108,9 +100,9 @@ environments {
 log4j.main = {
     // Example of changing the log pattern for the default console appender:
     //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+    appenders {
+        console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+    }
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
