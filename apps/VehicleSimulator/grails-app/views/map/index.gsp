@@ -126,7 +126,7 @@
            	var latlng = new google.maps.LatLng (latitude, longitude);
            	var mapOptions = {
                    	center: latlng,
-                   	zoom: 12,
+                   	zoom: 15,
                    	mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             var map = new google.maps.Map( mapCanvas, mapOptions);

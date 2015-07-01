@@ -1,6 +1,8 @@
 package io.pivotal.demo;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,6 +95,8 @@ public class VehicleMessageConsumer
 	{
 		try
 		{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			
 			if (rabbitConnection == null || rabbitChannel == null)
 			{
 				System.out.println("INFO: Conneciton is not already opened. Opening the connection...");
@@ -100,7 +104,9 @@ public class VehicleMessageConsumer
 			}
 			
 			boolean autoAck = false;
+System.out.println("here 1: " + sdf.format(new Date()));			
 			GetResponse response = rabbitChannel.basicGet(rabbitQueueName, autoAck);
+System.out.println("here 2: " + sdf.format(new Date()));			
 			if (response == null)
 			{
 				return null;
@@ -113,8 +119,10 @@ public class VehicleMessageConsumer
 			String bodyAsString = new String(body);
 			
 			// acknowledge receipt of message
+System.out.println("here 3: " + sdf.format(new Date()));			
 			rabbitChannel.basicAck(deliveryTag, false); 
-			
+System.out.println("here 4: " + sdf.format(new Date()));			
+	
 			return bodyAsString;				
 		}
 		catch(IOException ioex)
