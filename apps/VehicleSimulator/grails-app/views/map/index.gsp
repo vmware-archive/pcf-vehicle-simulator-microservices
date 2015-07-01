@@ -122,7 +122,7 @@
            	var latlng = new google.maps.LatLng (latitude, longitude);
            	var mapOptions = {
                    	center: latlng,
-                   	zoom: 14,
+                   	zoom: 12,
                    	mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             var map = new google.maps.Map( mapCanvas, mapOptions);
@@ -190,7 +190,7 @@
                         console.debug("Adding dealership " + dealership.name + " to the map (" + dealership.address.latitude + ", " + dealership.address.longitude + ")");
 
                         var title = dealership.name + "\n" + 
-                        	dealership.address.street + ", " + dealership.address.city + ", " + dealership.address.stateCode + " " + dealership.address.zipCode;
+                        	dealership.address.street + ", " + dealership.address.city + ", " + dealership.address.stateCode + " " + dealership.address.zipcode;
 
                         addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, title); 
                     }
