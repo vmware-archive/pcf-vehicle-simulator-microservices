@@ -6,12 +6,13 @@ This service is written in Go. In order to deploy this to Cloud Foundry, you nee
 1. Golang (https://golang.org/)
 2. Godep (https://github.com/tools/godep)
 3. External Packages
-   a. tracelog (github.com/goinggo/tracelog) 
+
+   **tracelog** (github.com/goinggo/tracelog) 
 ```
 $ go get github.com/goinggo/tracelog
 ```
 
-   b. mux (github.com/gorilla/mux)
+   **mux** (github.com/gorilla/mux)
 ```
 $ go get github.com/gorilla/mux
 ```
@@ -21,5 +22,5 @@ $ go get github.com/gorilla/mux
 If you add any external packages/dependencies be sure you run Godep (https://github.com/tools/godep) before deploying to Cloud Foundry
 
 ```
-$godep save
+$ godep save
 ```
