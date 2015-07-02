@@ -7,7 +7,9 @@
       html, body, #map-canvas { height: 90%; margin: 0; padding: 0;}
       
       #map-canvas {width: 50%; float: left;}
+      #commands {width: 50%; float: left;}
       #vehicle-data { padding: 5px; background-color: #eeeeee; width: 45%; float: left;}
+      #services-data { padding: 5px; background-color: #eeeeee; width: 45%; float: left;}
       
       .rTable 					{ display: table; width: 100%; } 
       .rTableRow 				{ display: table-row; } 
@@ -16,8 +18,12 @@
       .rTableHeading 			{ display: table-header-group; background-color: #ddd; font-weight: bold; } 
       .rTableFoot 				{ display: table-footer-group; font-weight: bold; background-color: #ddd; } 
       .rTableBody 				{ display: table-row-group; }
+      
+      #gasStations { padding-top: 2%; }
+      #dealerships { padding-top: 2%; }
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <asset:javascript src="jquery.timer.js"/>
     <!-- TODO: move key out of the HTML -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBywCGRuSOk1a0hJed2vOn3lZH6OIZbQ0E"
             type="text/javascript"></script>
@@ -47,43 +53,81 @@
     </script>
   </head>
   <body>
-  	<div id="commands">
-		<form id="frmCommands">
-			<input id="callVehicleWSButton" type="submit" value="Retrieve Vehicle Info">
-		</form>
-  		<g:if test="${flash.message}">
-  			<div class="message">${flash.message}</div>
-  		</g:if>
+  	<div id="pageHeader">
+	  	<div id="commands">
+			<form id="frmCommands">
+				<input id="startRetrievingDataButton" type="submit" value="Start Retrieving Data">
+				<input id="stopRetrievingDataButton" type="submit" value="Stop Retrieving Data">
+			</form>
+	  		<g:if test="${flash.message}">
+	  			<div class="message">${flash.message}</div>
+	  		</g:if>
+	  	</div>
+	   	<div id="vehicle-data">
+	        <div class="rTable">
+	    		<div class="rTableRow">
+	    			<div class="rTableHead"><strong><center>Odometer</center></strong></div>
+	    			<div class="rTableHead"><strong><center>Fuel Level</center></strong></div>
+	    			<div class="rTableHead"><strong><center>Latitude, Longitude</center></strong></div>    			
+	    		</div>
+	    		<div class="rTableRow">
+	    			<div id="tcOdometer" class="rTableCell">&nbsp;</div>
+	    			<div id="tcFuelLevel" class="rTableCell">&nbsp;</div>
+	    			<div id="tcLatLng" class="rTableCell">&nbsp;</div>
+	    		</div>
+	    	</div>
+    	</div>
   	</div>
     <div id="map-canvas">
     </div>
-    <div id="vehicle-data">
-    	<div class="rTable">
-    		<div class="rTableRow">
-    			<div class="rTableHead"><strong>Odometer</strong></div>
-    			<div class="rTableHead"><strong>Fuel Level</strong></div>
-    			<div class="rTableHead"><strong>Latitude, Longitude</strong></div>    			
-    		</div>
-    		<div class="rTableRow">
-    			<div id="tcOdometer" class="rTableCell"></div>
-    			<div id="tcFuelLevel" class="rTableCell"></div>
-    			<div id="tcLatLng" class="rTableCell"></div>
-    		</div>
+    <div id="services-data">
+    	<div id="gasStations">
     	</div>
-    	<div id="debugText"></div>
+    	<div id="dealerships">
+    	</div>
     </div>
+
     
     <script type="text/javascript">
+
+        var timer = $.timer(function() {
+        	callRetreiveVehicleInfo( vehicleInfoSuccessCallback, vehicleInfoErrorCallback)
+        });
+
+        // The timer used to consistently retrieve Vehicle Data
+        // Note: The time is in milliseconds
+        // Note: 5 seconds isn't long enough
+        timer.set( { time: 8000, autstart: false });
+    	
     	$(document).ready(function () {
         	// hook into the vehicle WS button
-        	$( "#callVehicleWSButton").click( function (event) {
+        	$( "#startRetrievingDataButton").click( function (event) {
             	// stop the browser from submtting the form
             	event.preventDefault();
 
-            	callRetreiveVehicleInfo( vehicleInfoSuccessCallback, vehicleInfoErrorCallback)
+            	// callRetreiveVehicleInfo( vehicleInfoSuccessCallback, vehicleInfoErrorCallback)
+            	startTimer();
             	
             });
+
+            $( "#stopRetrievingDataButton").click( function (event) {
+            	// stop the browser from submtting the form
+            	event.preventDefault();
+
+            	stopTimer();
+            });
         });
+
+        function startTimer() 
+        {
+        	timer.play()
+        } 
+
+        function stopTimer()
+        {
+            timer.pause();
+        }
+        
 
     	function vehicleInfoSuccessCallback( data, textStatus, jqXHR )
     	{
@@ -110,8 +154,7 @@
                callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback)
 
                // find the nearest dealerships
-               callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback)
-               
+               callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback)               
             }
 
             $( "#tcLatLng").html( latlngStr );
@@ -186,6 +229,15 @@
 					console.debug('the icon url is ' + iconUrl);
                     
                     console.debug("There are " + data.dealers.length + " dealerships nearby");
+
+                    // clear the gas stations div
+                    $( "#dealerships").html("");
+                    
+                    var listHtml = "";
+                    if (data.dealers.length > 0)
+                    {
+                        listHtml = '<div class="rTable"><div class="rTableRow"><div class="rTableHead"><strong><center>Nearby Dealerships</center></strong></div></div>';
+                    }
                     
                     for(var i=0; i<data.dealers.length;i++)
                     {
@@ -197,6 +249,16 @@
                         	dealership.address.street + ", " + dealership.address.city + ", " + dealership.address.stateCode + " " + dealership.address.zipcode;
 
                         addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, title); 
+
+                        listHtml = listHtml + buildDealershipList(dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance);
+                    }
+
+                    if (data.dealers.length > 0)
+                    {
+                    	listHtml = listHtml + "</div>";
+                        console.debug("listHtml is ");
+                        console.debug(listHtml);
+                        $( "#dealerships").html( listHtml );
                     }
                     
                 },
@@ -261,19 +323,50 @@
                     console.debug('the icon url is ' + iconUrl);
                     
                     console.debug("There are " + data.length + " gas stations nearby");
+
+                    // clear the gas stations div
+                    $( "#gasStations").html("");
+                    
+                    var listHtml = "";
+                    if (data.length>0)
+                    {
+                        listHtml = '<div class="rTable"><div class="rTableRow"><div class="rTableHead"><strong><center>Nearby Gas Stations</center></strong></div></div>';
+                    }
                     
                     for(var i=0; i<data.length;i++)
                     {
                         var gasStation = data[i];
 
-                        console.debug("Adding gas station " + gasStation.Name + " to the map. (" + gasStation.Lat + ", " + gasStation.Lng + ")");
+                        console.debug("Adding gas station " + gasStation.Name + " to the map. (" + gasStation.Lat + ", " + gasStation.Lng + ")");                        
 
                         addMarkerToMap(map, gasStation.Lat, gasStation.Lng, iconUrl, gasStation.Name + "\n" + gasStation.Address + "\n");
+
+                        listHtml = listHtml + buildGasStationList( gasStation.Name, gasStation.Address);
+                    }
+
+                    if (data.length>0)
+                    {
+                        listHtml = listHtml + "</div>";
+                        console.debug("listHtml is ");
+                        console.debug(listHtml);
+                        $( "#gasStations").html( listHtml );
                     }
                 },
                 error: errorCallback
             })
         }  
+
+        function buildGasStationList(name, address)
+        {
+            var html = '<div class="rTableRow"><div class="rTableCell">' + name + '</div><div class="rTableCell">' + address + '</div></div>'
+            return html;
+        }
+
+        function buildDealershipList(name, street, city, state, zipCode, distance)
+        {
+            var html = '<div class="rTableRow"><div class="rTableCell"><strong>' + name + "</strong><br/>" + street + " " + city + " " + state + " " + zipCode + "<br/>" + "Distance: " + distance + " miles" + "</div></div>";
+            return html;
+        }
         
     </script>
   </body>
