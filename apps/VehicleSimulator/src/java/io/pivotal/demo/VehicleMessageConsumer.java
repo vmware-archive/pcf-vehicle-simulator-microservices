@@ -1,8 +1,6 @@
 package io.pivotal.demo;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -95,8 +93,6 @@ public class VehicleMessageConsumer
 	{
 		try
 		{
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			
 			if (rabbitConnection == null || rabbitChannel == null)
 			{
 				System.out.println("INFO: Conneciton is not already opened. Opening the connection...");
@@ -104,9 +100,8 @@ public class VehicleMessageConsumer
 			}
 			
 			boolean autoAck = false;
-System.out.println("here 1: " + sdf.format(new Date()));			
 			GetResponse response = rabbitChannel.basicGet(rabbitQueueName, autoAck);
-System.out.println("here 2: " + sdf.format(new Date()));			
+
 			if (response == null)
 			{
 				return null;
@@ -119,9 +114,7 @@ System.out.println("here 2: " + sdf.format(new Date()));
 			String bodyAsString = new String(body);
 			
 			// acknowledge receipt of message
-System.out.println("here 3: " + sdf.format(new Date()));			
 			rabbitChannel.basicAck(deliveryTag, false); 
-System.out.println("here 4: " + sdf.format(new Date()));			
 	
 			return bodyAsString;				
 		}
@@ -142,37 +135,10 @@ System.out.println("here 4: " + sdf.format(new Date()));
 		{
 			VehicleInfo vehicleInfo = new VehicleInfo();
 			String msg = retrieveMessage();
-			boolean haveLatitude = false;
-			boolean haveLongitude = false;
-			while (msg != null)
-			{				
-				VehicleData vehicleData = convertToPojo(msg);
-				System.out.println(vehicleData);
-				
-				if (vehicleData.isLatitude())
-				{
-					haveLatitude = true;
-					vehicleInfo.setLatitude(vehicleData.getValue());
-				}
-				else if (vehicleData.isLongitude())
-				{
-					haveLongitude = true;
-					vehicleInfo.setLongitude(vehicleData.getValue());
-				}
-				else if (vehicleData.isFuelLevel())
-				{
-					vehicleInfo.setFuelLevel(vehicleData.getValue());
-				}
-				else if (vehicleData.isOdometer())
-				{
-					vehicleInfo.setOdometer(vehicleData.getValue());
-				}
-				
-				if (haveLatitude && haveLongitude)
-					break;
-				
-				msg = retrieveMessage();
-			}
+
+			vehicleInfo = convertToPojo(msg);
+			System.out.println(vehicleInfo);
+
 			return vehicleInfo;
 		}
 		catch(Exception ex)
@@ -181,14 +147,14 @@ System.out.println("here 4: " + sdf.format(new Date()));
 		}
 	}
 	
-	private VehicleData convertToPojo(String json)
+	private VehicleInfo convertToPojo(String json)
 	{
 		try
 		{
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			VehicleData vehicleData = mapper.readValue(json, VehicleData.class);
-			return vehicleData;
+			VehicleInfo vehicleInfo = mapper.readValue(json, VehicleInfo.class);
+			return vehicleInfo;
 		}
 		catch(Exception ex)
 		{

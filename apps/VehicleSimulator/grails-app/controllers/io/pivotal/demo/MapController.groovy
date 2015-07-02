@@ -10,7 +10,6 @@ class MapController {
 	
 	def grailsApplication
 	
-	// TODO: Don't hard code these values
 	def static vehicleMessageConsumer
 	
     def index() 

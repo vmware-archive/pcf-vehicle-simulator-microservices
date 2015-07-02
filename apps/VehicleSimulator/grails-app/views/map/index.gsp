@@ -90,6 +90,9 @@
     
     <script type="text/javascript">
 
+    	var map;
+    	var marker;
+    	
         var timer = $.timer(function() {
         	callRetreiveVehicleInfo( vehicleInfoSuccessCallback, vehicleInfoErrorCallback)
         });
@@ -97,7 +100,7 @@
         // The timer used to consistently retrieve Vehicle Data
         // Note: The time is in milliseconds
         // Note: 5 seconds isn't long enough
-        timer.set( { time: 8000, autstart: false });
+        timer.set( { time: 5000, autstart: false });
     	
     	$(document).ready(function () {
         	// hook into the vehicle WS button
@@ -148,7 +151,12 @@
                	latlngStr = data.latitude + ", " + data.longitude;
                	
                	// update the Google Map
-               var map = addLatLngToNewMap( data.latitude, data.longitude);
+               if (marker != null && map != null) {
+                 map = updateMap( data.latitude, data.longitude );
+               }
+               else {
+                 map = addLatLngToNewMap( data.latitude, data.longitude);
+               }
 
                // find the nearest gas stations
                callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback)
@@ -169,10 +177,10 @@
            	var latlng = new google.maps.LatLng (latitude, longitude);
            	var mapOptions = {
                    	center: latlng,
-                   	zoom: 15,
+                   	zoom: 13,
                    	mapTypeId: google.maps.MapTypeId.ROADMAP
             }
-            var map = new google.maps.Map( mapCanvas, mapOptions);
+            map = new google.maps.Map( mapCanvas, mapOptions);
 
             var markerOptions = {
                     position: latlng,
@@ -180,10 +188,18 @@
                     map: map
             }
 
-            var marker = new google.maps.Marker( markerOptions );
+            marker = new google.maps.Marker( markerOptions );
 
             return map;
         }
+
+        function updateMap(latitude, longitude)
+        {
+            var latlng = new google.maps.LatLng( latitude, longitude );
+            marker.setPosition( latlng );
+            map.panTo( latlng );
+
+        } 
 
         function vehicleInfoErrorCallback( jqXHR, textStatus, errorThrown)
         {

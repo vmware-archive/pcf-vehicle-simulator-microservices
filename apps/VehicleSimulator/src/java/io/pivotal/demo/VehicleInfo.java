@@ -5,6 +5,7 @@ public class VehicleInfo {
 	private Double fuelLevel;
 	private Double latitude;
 	private Double longitude;
+	private Double time;
 	
 	public Double getOdometer() {
 		return odometer;
@@ -30,11 +31,17 @@ public class VehicleInfo {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
+	public Double getTime() {
+		return time;
+	}
+	public void setTime(Double time) {
+		this.time = time;
+	}
 	
 	@Override
 	public String toString() {
 		return "VehicleInfo [odometer=" + odometer + ", fuelLevel=" + fuelLevel
-				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", time=" + time +"]";
 	}
 	
 }
