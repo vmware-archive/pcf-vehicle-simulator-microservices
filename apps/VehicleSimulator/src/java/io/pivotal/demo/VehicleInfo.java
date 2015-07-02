@@ -1,7 +1,11 @@
 package io.pivotal.demo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class VehicleInfo {
 	private Double odometer;
+	
+	@JsonProperty("fuel_level")
 	private Double fuelLevel;
 	private Double latitude;
 	private Double longitude;

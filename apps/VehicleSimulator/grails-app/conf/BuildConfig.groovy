@@ -54,6 +54,7 @@ grails.project.dependency.resolution = {
         compile "com.rabbitmq:amqp-client:3.5.3"
 		compile "com.fasterxml.jackson.core:jackson-core:2.5.4"
 		compile "com.fasterxml.jackson.core:jackson-databind:2.5.4"
+		compile "com.fasterxml.jackson.core:jackson-annotations:2.5.4"
     }
 
     plugins {
