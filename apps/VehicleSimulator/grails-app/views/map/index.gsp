@@ -2,27 +2,109 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <title>Google Maps JavaScript API Example</title>
-    <style type="text/css">
-      html, body, #map-canvas { height: 90%; margin: 0; padding: 0;}
-      
-      #map-canvas {width: 50%; float: left;}
-      #commands {width: 50%; float: left;}
-      #vehicle-data { padding: 5px; background-color: #eeeeee; width: 45%; float: left;}
-      #services-data { padding: 5px; background-color: #eeeeee; width: 45%; float: left;}
-      
-      .rTable 					{ display: table; width: 100%; } 
-      .rTableRow 				{ display: table-row; } 
-      .rTableHeading 			{ display: table-header-group; background-color: #ddd; } 
-      .rTableCell, .rTableHead 	{ display: table-cell; padding: 3px 10px; border: 1px solid #999999; } 
-      .rTableHeading 			{ display: table-header-group; background-color: #ddd; font-weight: bold; } 
-      .rTableFoot 				{ display: table-footer-group; font-weight: bold; background-color: #ddd; } 
-      .rTableBody 				{ display: table-row-group; }
-      
-      #gasStations { padding-top: 2%; }
-      #dealerships { padding-top: 2%; }
-    </style>
+    <title>Vehicle Simulator</title>
+    
+	<!-- Latest Bootstrap compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<asset:stylesheet href="main.css"/>
+  </head>
+  <body>
+  	<div class="container logo">
+		<g:img dir="images" file="ford_logo.png"/><label>Vehicle Simulator</label>
+	</div>
+	<nav class="navbar navbar-default">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+				</ul>
+				<div class="row" style="width:50%;float:right;">
+					<div class="col-xs-8 alerts">
+						<div class="alert alert-success" role="alert"><strong>Good Condition</strong> - Performing as expected.</div>
+					</div>
+					<div class="col-xs-2 buttons">
+						<button type="button" class="btn btn-success" onclick="startTimer();">Start</button>
+					</div>
+					<div class="col-xs-2 buttons">
+						<button type="button" class="btn btn-danger" onclick="stopTimer();">Stop</button>
+				  		<g:if test="${flash.message}">
+				  			<div class="message">${flash.message}</div>
+				  		</g:if>
+				  	</div>
+				</div>
+				
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>  	
+  	<div class="container">
+		<div class="row main-content-row">
+			<div class="col-xs-6 vehicle-info-container">
+			    <div class="map-container">
+				    <div id="map-canvas">
+				    </div>
+				</div>
+			    <div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">Vehicle Stats</h3>
+					</div>
+					<div class="panel-body">
+						<ul class="list-group">
+							<li class="list-group-item">
+								<label>Odometer:</label> <span id="tcOdometer">Not Available</span>
+							</li>
+							<li class="list-group-item">
+								<label>Fuel Level:</label> 
+								<div class="progress">
+									<div id="fuelLevel" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">40% Complete (success)</span></div>
+								</div>
+							</li>
+							<li class="list-group-item">
+								<label>Location (lat,lng):</label> <span id="tcLatLng">Not Available</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6">		
+
+				<ul class="nav nav-pills">
+				  <li id="gasStationsPill" role="presentation" class="active" onclick="activeTab('dealerships', 'gasStations');"><a href="#">Gas Stations</a></li>
+				  <li id="dealershipsPill" role="presentation" onclick="activeTab('gasStations', 'dealerships');"><a href="#">Dealers</a></li>
+				</ul>
+
+				<div id="data-tables">
+				    <div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">Nearby Locations</h3>
+						</div>
+						<div class="panel-body">
+					    	<table id="gasStations" class="table table-striped">
+					    		<tbody>
+					    			<tr><td>No Information Available</td></tr>
+					    		</tbody>
+					    	</table>
+					    	<table id="dealerships" class="table table-striped" style="display:none;">
+					    		<tbody>
+					    			<tr><td>No Information Available</td></tr>
+					    		</tbody>
+					    	</table>
+				    	</div>
+				    </div>
+			    </div>
+		    </div>
+	  	</div>
+	</div>    
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>    
     <asset:javascript src="jquery.timer.js"/>
     <!-- TODO: move key out of the HTML -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBywCGRuSOk1a0hJed2vOn3lZH6OIZbQ0E"
@@ -41,7 +123,7 @@
         var mapOptions = 
         {
           center: { lat: 39.833333, lng: -98.583333},
-          zoom: 5
+          zoom: 4
         };
         var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
     }
@@ -51,43 +133,7 @@
     var BRAND = "ford";
     
     </script>
-  </head>
-  <body>
-  	<div id="pageHeader">
-	  	<div id="commands">
-			<form id="frmCommands">
-				<input id="startRetrievingDataButton" type="submit" value="Start Retrieving Data">
-				<input id="stopRetrievingDataButton" type="submit" value="Stop Retrieving Data">
-			</form>
-	  		<g:if test="${flash.message}">
-	  			<div class="message">${flash.message}</div>
-	  		</g:if>
-	  	</div>
-	   	<div id="vehicle-data">
-	        <div class="rTable">
-	    		<div class="rTableRow">
-	    			<div class="rTableHead"><strong><center>Odometer</center></strong></div>
-	    			<div class="rTableHead"><strong><center>Fuel Level</center></strong></div>
-	    			<div class="rTableHead"><strong><center>Latitude, Longitude</center></strong></div>    			
-	    		</div>
-	    		<div class="rTableRow">
-	    			<div id="tcOdometer" class="rTableCell">&nbsp;</div>
-	    			<div id="tcFuelLevel" class="rTableCell">&nbsp;</div>
-	    			<div id="tcLatLng" class="rTableCell">&nbsp;</div>
-	    		</div>
-	    	</div>
-    	</div>
-  	</div>
-    <div id="map-canvas">
-    </div>
-    <div id="services-data">
-    	<div id="gasStations">
-    	</div>
-    	<div id="dealerships">
-    	</div>
-    </div>
-
-    
+	    
     <script type="text/javascript">
 
     	var map;
@@ -102,25 +148,6 @@
         // Note: 5 seconds isn't long enough
         timer.set( { time: 5000, autstart: false });
     	
-    	$(document).ready(function () {
-        	// hook into the vehicle WS button
-        	$( "#startRetrievingDataButton").click( function (event) {
-            	// stop the browser from submtting the form
-            	event.preventDefault();
-
-            	// callRetreiveVehicleInfo( vehicleInfoSuccessCallback, vehicleInfoErrorCallback)
-            	startTimer();
-            	
-            });
-
-            $( "#stopRetrievingDataButton").click( function (event) {
-            	// stop the browser from submtting the form
-            	event.preventDefault();
-
-            	stopTimer();
-            });
-        });
-
         function startTimer() 
         {
         	timer.play()
@@ -144,6 +171,7 @@
 
         	$( "#tcOdometer").html( data.odometer == null ? "n/a" : data.odometer);
         	$( "#tcFuelLevel").html( data.fuelLevel == null ? "n/a" : data.fuelLevel);
+        	$('#fuelLevel').css('width', data.fuelLevel+'%').attr('aria-valuenow', data.fuelLevel);
 
         	var latlngStr = "";
         	if (data.latitude != null && data.longitude != null)
@@ -247,14 +275,9 @@
                     console.debug("There are " + data.dealers.length + " dealerships nearby");
 
                     // clear the gas stations div
-                    $( "#dealerships").html("");
+                    $( "#dealerships tbody").empty();
                     
-                    var listHtml = "";
-                    if (data.dealers.length > 0)
-                    {
-                        listHtml = '<div class="rTable"><div class="rTableRow"><div class="rTableHead"><strong><center>Nearby Dealerships</center></strong></div></div>';
-                    }
-                    
+                   
                     for(var i=0; i<data.dealers.length;i++)
                     {
                         var dealership = data.dealers[i];
@@ -266,15 +289,12 @@
 
                         addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, title); 
 
-                        listHtml = listHtml + buildDealershipList(dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance);
+                        $( "#dealerships tbody").append(buildDealershipList(dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance));
                     }
 
-                    if (data.dealers.length > 0)
+                    if (data.length=0)
                     {
-                    	listHtml = listHtml + "</div>";
-                        console.debug("listHtml is ");
-                        console.debug(listHtml);
-                        $( "#dealerships").html( listHtml );
+                        $( "#dealerships tbody").append('<tr><td>No Nearby Dealerships</td></tr>');
                     }
                     
                 },
@@ -341,13 +361,9 @@
                     console.debug("There are " + data.length + " gas stations nearby");
 
                     // clear the gas stations div
-                    $( "#gasStations").html("");
+//                    $( "#gasStations").html("");
                     
-                    var listHtml = "";
-                    if (data.length>0)
-                    {
-                        listHtml = '<div class="rTable"><div class="rTableRow"><div class="rTableHead"><strong><center>Nearby Gas Stations</center></strong></div></div>';
-                    }
+                    $( "#gasStations tbody").empty();
                     
                     for(var i=0; i<data.length;i++)
                     {
@@ -357,15 +373,12 @@
 
                         addMarkerToMap(map, gasStation.Lat, gasStation.Lng, iconUrl, gasStation.Name + "\n" + gasStation.Address + "\n");
 
-                        listHtml = listHtml + buildGasStationList( gasStation.Name, gasStation.Address);
+                        $( "#gasStations tbody").append(buildGasStationList( gasStation.Name, gasStation.Address));
                     }
 
-                    if (data.length>0)
+                    if (data.length=0)
                     {
-                        listHtml = listHtml + "</div>";
-                        console.debug("listHtml is ");
-                        console.debug(listHtml);
-                        $( "#gasStations").html( listHtml );
+                        $( "#gasStations tbody").append('<tr><td>No Nearby Gas Stations</td></tr>');
                     }
                 },
                 error: errorCallback
@@ -374,14 +387,21 @@
 
         function buildGasStationList(name, address)
         {
-            var html = '<div class="rTableRow"><div class="rTableCell">' + name + '</div><div class="rTableCell">' + address + '</div></div>'
+            var html = '<tr><td><strong>' + name + '</strong></td><td>' + address + '</td></tr>';
             return html;
         }
 
         function buildDealershipList(name, street, city, state, zipCode, distance)
         {
-            var html = '<div class="rTableRow"><div class="rTableCell"><strong>' + name + "</strong><br/>" + street + " " + city + " " + state + " " + zipCode + "<br/>" + "Distance: " + distance + " miles" + "</div></div>";
+            var html = '<tr><td><strong>' + name + "</strong></td><td>" + street + " " + city + " " + state + " " + zipCode + "<br/>" + "Distance: " + distance + " miles" + "</td></tr>";
             return html;
+        }
+
+        function activeTab(disabledId, activeId) {
+			$('#' + disabledId).hide();
+			$('#' + disabledId + "Pill").removeClass('active');
+			$('#' + activeId).show();
+			$('#' + activeId + "Pill").addClass('active');
         }
         
     </script>
