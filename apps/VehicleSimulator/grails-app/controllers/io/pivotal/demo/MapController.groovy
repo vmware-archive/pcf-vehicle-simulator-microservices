@@ -46,6 +46,7 @@ class MapController {
 		render info as JSON
 	}
 	
+	// URL Example: /VehicleSimulator/map/nearestGasStations?lat=42.221786&lng=-83.414139
 	def nearestGasStations()
 	{
 		println "Nearest Gas Stations"
@@ -68,6 +69,7 @@ class MapController {
 		render response.json as JSON
 	}
 	
+	// URL Example: /VehicleSimulator/map/nearestDealerships?lat=42.221786&lng=-83.414139&brand=ford
 	def nearestDealerships()
 	{
 		println "Nearest Dealerships"
@@ -76,7 +78,7 @@ class MapController {
 		def lng = params.lng
 		def brand = params.brand
 		
-		println "Latitude, Longitude is ${lat}, ${lng}. Brand is {$brand}"
+		println "Latitude, Longitude is ${lat}, ${lng}. Brand is ${brand}"
 		
 		// first we need to get the zip code...
 		def restBuilder = new RestBuilder()
@@ -98,5 +100,27 @@ class MapController {
 		println "The dealer response (JSON) is {$dealerResponse.json}"
 		
 		render dealerResponse.json as JSON
+	}
+	
+	// URL Example: /VehicleSimulator/map/nearestGasStationsWithPrices?lat=42.221786&lng=-83.414139&distance=5
+	def nearestGasStationsWithPrices()
+	{
+		println "Nearest Gas Stations with Prices"
+		
+		def lat = params.lat
+		def lng = params.lng
+		def distance = params.distance
+		
+		println "Latitude, Longitude is {$lat}, ${lng}. Distance is ${distance}"
+		
+		def restBuilder = new RestBuilder();
+		
+		def url = grailsApplication.config.io.pivotal.demo.gas.price.service.url + lat + "/" + lng + "/" + distance
+		
+		def response = restBuilder.getAt(url);
+		
+		println "The gas station prices response (JSON) is ${response.json}"
+		
+		render response.json as JSON 
 	}
 }
