@@ -1,0 +1,8 @@
+---
+applications:
+  - name: gas-price-service
+    memory: 256M
+    instances: 1
+    env:
+      MY_GAS_FEED_BASE_URL: http://api.mygasfeed.com
+      MY_GAS_FEED_API_KEY: <PUT YOUR KEY HERE> 
