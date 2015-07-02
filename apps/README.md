@@ -9,7 +9,7 @@ A GoLang service that puts a lightweight wrapper around Google's Reverse Geocode
 	PORT - which port the service should run on
 	GOOGLE_MAPS_API_KEY - the API Key from a server application from the Google Developers Console (see above)
 
-The url to access this service when running locally is http://localhost:<port>/<lat>/<lng> or http://localhost:8080/42.501157/-83.285681 which returns the following
+The url to access this service when running locally is http://localhost:[port]/[lat]/[lng] or http://localhost:8080/42.501157/-83.285681 which returns the following
 
 ```
 {"postalCode":"48034"}
@@ -21,7 +21,7 @@ A GoLang service that puts a lightweight wrapper around Google's Places Service 
 	PORT - which port the service should run on
 	GOOGLE_PLACES_API_KEY - the API key from a server application from the Google Developers Console (see above)
 	
-The URL to access this service when running locally is http://localhost:<port>/nearby/<places type>/<lat>/<lng> or http://localhost:8080/nearby/gas_station/42.501157/-83.285681 which returns the following:
+The URL to access this service when running locally is http://localhost:[port]/nearby/[places type]/[lat]/[lng] or http://localhost:8080/nearby/gas_station/42.501157/-83.285681 which returns the following:
 
 ```
 [
@@ -43,6 +43,50 @@ The URL to access this service when running locally is http://localhost:<port>/n
  ]
 ```
 
+### GasPriceService
+A GoLang service that puts a lightweight wrapper around the My Gas Feed API (http://www.mygasfeed.com/)
+	Requires an API key (sign up for one here: http://www.mygasfeed.com/keys/submit
+	
+	Environment variables needed:
+	PORT - which port the service should run on
+	MY_GAS_FEED_BASE_URL - the base endpoint. For produciton this should be http://api.mygasfeed.com)
+	MY_GAS_FEED_API_KEY - the API key provided from the MyGasFeed API after signing up for an account
+	
+The URL to access this service when running locally is http://localhost:[PORT]/[lat]/[lng]/[distance] or http://localhost:8080/42.501157/-83.285681/10 which returns
+
+```
+{
+  "status": {
+    "error": "NO",
+    "code": 200,
+    "description": "none",
+    "message": "Request ok"
+  },
+  "stations": [
+    {
+      "id": "53330",
+      "lat": "42.501438",
+      "lng": "-83.284988",
+      "station": "Mobil",
+      "address": "29014 Telegraph Rd",
+      "city": "Southfield",
+      "region": "Michigan",
+      "zip": "48034",
+      "distance": "0 miles",
+      "reg_price": "2.91",
+      "mid_price": "2.85",
+      "pre_price": "3.10",
+      "diesel_price": "N\/A",
+      "reg_date": "3 weeks ago",
+      "mid_date": "3 weeks ago",
+      "pre_date": "3 weeks ago",
+      "diesel_date": "3 weeks ago"
+    },
+    // more stations
+  ]
+}
+```  
+		
 ### DealerService
 A GoLang service that puts a lightweight wrapper around the Edmunds Web Services (http://developer.edmunds.com/)
 	Requires an API Key (sign up for one at the URL listed above)
@@ -51,7 +95,7 @@ A GoLang service that puts a lightweight wrapper around the Edmunds Web Services
 	PORT - which port the service should run on
 	EDMUNDS_API_KEY - API Key provided from the Edmunds API after signing up for an account
 	
-The URL to access this service when running locally is http://localhost:<port>/<make>/<postalCode> or http://localhost:8080/ford/48116 which returns the following:
+The URL to access this service when running locally is http://localhost:[port]/[make]/[postalCode] or http://localhost:8080/ford/48116 which returns the following:
 
 ```
 {
