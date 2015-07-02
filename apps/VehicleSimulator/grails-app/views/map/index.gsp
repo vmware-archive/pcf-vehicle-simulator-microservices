@@ -150,7 +150,7 @@
            	{
                	latlngStr = data.latitude + ", " + data.longitude;
                	
-               	// update the Google Map
+               	// create a new google map or update it if one already exists
                if (marker != null && map != null) {
                  map = updateMap( data.latitude, data.longitude );
                }
@@ -198,7 +198,7 @@
             var latlng = new google.maps.LatLng( latitude, longitude );
             marker.setPosition( latlng );
             map.panTo( latlng );
-
+			return map;
         } 
 
         function vehicleInfoErrorCallback( jqXHR, textStatus, errorThrown)
