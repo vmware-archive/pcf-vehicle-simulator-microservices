@@ -62,18 +62,27 @@ func ReverseGeocodeToPostalCode(lat float64, lng float64 ) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	
+	tracelog.Trace("response", "from google", string(data));
 
 	if len(response.Results) == 0 {
+		tracelog.Trace("Response from Google", "length of results", "is zero");
 		return "", googleZeroResultsError
 	}
 	
-	for _, addressComp := range response.Results[0].AddressComponents {
-		for _, aType := range addressComp.Types {
-			if aType == "postal_code" {
-				return addressComp.ShortName, nil
+	for _, result := range response.Results {
+		for _, addressComp := range result.AddressComponents {
+			for _, aType := range addressComp.Types {
+				tracelog.Trace("loop", "aType", aType);
+				if aType == "postal_code" {
+					tracelog.Trace("loop", "shortname", addressComp.ShortName);
+					return addressComp.ShortName, nil
+				}
 			}
 		}
 	}
+	
+	tracelog.Trace("Response from Google", "address components", "didnt' find postal code")
 
 	return "", googleZeroResultsError
 }

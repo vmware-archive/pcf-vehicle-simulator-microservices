@@ -37,6 +37,7 @@ var routes = Routes{
 }
 
 func main() {
+	// tracelog.Start(tracelog.LevelTrace)
     tracelog.Start(tracelog.LevelInfo)
     
 	var port = os.Getenv("PORT");	
