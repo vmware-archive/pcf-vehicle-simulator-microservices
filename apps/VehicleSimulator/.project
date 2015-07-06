@@ -27,7 +27,7 @@
 		<link>
 			<name>.link_to_grails_plugins</name>
 			<type>2</type>
-			<location>/Users/cjohnson/git/pcf-automotive-iot/apps/VehicleSimulator/target/work/plugins</location>
+			<location>/Users/rross/Documents/pcf-automotive-iot/apps/VehicleSimulator/target/work/plugins</location>
 		</link>
 	</linkedResources>
 </projectDescription>

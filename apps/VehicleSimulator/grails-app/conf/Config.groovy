@@ -102,6 +102,7 @@ io.pivotal.demo.google.geocode.url = "http://google-reverse-geocode-service.cfap
 io.pivotal.demo.google.places.gas.url = "http://google-places-service.cfapps.io/nearby/gas_station/"
 io.pivotal.demo.dealer.service.url = "http://dealer-service.cfapps.io/"
 io.pivotal.demo.gas.price.service.url = "http://gas-price-service.cfapps.io/"
+io.pivotal.demo.repair.service.url = "http://repair-service.cfapps.io/ServiceOpenings/"
 
 
 
