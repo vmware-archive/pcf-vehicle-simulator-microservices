@@ -27,14 +27,31 @@
 				<ul class="nav navbar-nav">
 					<li class="active"><a href="#">Home</a></li>
 				</ul>
-				<div class="row" style="width:50%;float:right;">
-					<div class="col-xs-8 alerts">
-						<div class="alert alert-success" role="alert"><strong>Good Condition</strong> - Performing as expected.</div>
+				<div class="row" style="width:95%;float:right;">
+					<div class="col-xs-2">
+						<div class="input-group buttons">
+							<span class="input-group-addon" id="lblFuel">Fuel</span>
+							<input class="form-control" id="fuelThreshold" name="fuelThreshold" type="number" value="20" aria-describedby="lblFuel">
+							<span class="input-group-addon">%</span>
+						</div>
 					</div>
-					<div class="col-xs-2 buttons">
+					<div class="col-xs-3">
+						<div class="input-group buttons">
+							<span class="input-group-addon" id="lblSvcFrequency">Svc</span>
+							<input class="form-control" id="serviceFrequency" name="serviceFrequency" type="number" value="5000" aria-describedby="lblSvcFrequency">
+							<span class="input-group-addon">Miles</span>							
+						</div>
+					</div>
+					<div class="col-xs-1 buttons">
+						<button id="btnResetService" type="button" class="btn btn-primary" title="Mark the vehicle as serviced" onclick="serviceVehicle();">Svc</button>
+					</div>
+					<div class="col-xs-4 alerts">
+						<div id="currentCondition" class="alert alert-success" role="alert"><strong>Good Condition</strong> - Performing as expected.</div>
+					</div>
+					<div class="col-xs-1 buttons">
 						<button id="btnStart" type="button" class="btn btn-success" onclick="startTimer();">Start</button>
 					</div>
-					<div class="col-xs-2 buttons">
+					<div class="col-xs-1 buttons">
 						<button id="btnStop" type="button" class="btn btn-danger" onclick="stopTimer();">Stop</button>
 				  		<g:if test="${flash.message}">
 				  			<div class="message">${flash.message}</div>
@@ -167,7 +184,8 @@
             timer.pause();
         }
         
-
+        var currentOdometer = 0;
+        
     	function vehicleInfoSuccessCallback( data, textStatus, jqXHR )
     	{
         	console.debug("vehicleInfoSuccessCallback()");
@@ -177,10 +195,15 @@
         	console.debug( data.longitude );
         	console.debug( data.fuelLevel );
         	console.debug( data.odometer  );
+        	
+        	currentOdometer = data.odometer;
 
         	$( "#tcOdometer").html( data.odometer == null ? "n/a" : data.odometer);
         	$( "#tcFuelLevel").html( data.fuelLevel == null ? "n/a" : data.fuelLevel);
         	$('#fuelLevel').css('width', data.fuelLevel+'%').attr('aria-valuenow', data.fuelLevel);
+        	
+        	var fuelThresholdPct = getFuelThresholdPercentage();
+        	console.debug("The current fuel threshold percentage is " + fuelThresholdPct);
 
         	var latlngStr = "";
         	if (data.latitude != null && data.longitude != null)
@@ -194,19 +217,147 @@
                else {
                  map = addLatLngToNewMap( data.latitude, data.longitude);
                }
-
-               // find the nearest gas stations
-               // callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback)
                
-               // find the nearest gas stations with prices..
-               callNearestGasStationsWithPrices( map, data.latitude, data.longitude, nearestGasStationWithPricesErrorCallback)
+               var fuelOk = true;
+               var serviceOk = true;
+               
+               if (data.fuelLevel < fuelThresholdPct)
+               {
+               		console.debug("Fuel threshold reached... displaying gas stations..");
+
+					updateConditionTolowFuel();
+               		
+               		// find the nearest gas stations (old version)
+               		// callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback);
+               
+               		// find the nearest gas stations with prices..
+               		callNearestGasStationsWithPrices( map, data.latitude, data.longitude, nearestGasStationWithPricesErrorCallback);
+               		
+               		fuelOk = false;
+               	}
+               	else
+               	{
+               		fuelOk = true;	
+               		
+               		// TODO: How can we hide the tab?
+               		
+               		// clear the gas stations               		
+               		$( "#gasStations thead").empty();
+                    $( "#gasStations tbody").empty();   
+                    $( "#gasStations tbody").append('<tr><td>No Information Available</td></tr>');            		
+               	}
 
                // find the nearest dealerships
-               callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback)               
+               if (needService(data.odometer))
+               {
+               		serviceOk = false;
+               		
+               		updateConditionToNeedService(fuelOk);
+               		
+               		callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback);
+               }
+               else
+               {
+               		serviceOk = true;
+               		
+               		// TODO: How can we hide the tab?
+               		
+               		// clear the dealerships
+               		$( "#dealerships tbody").empty();
+               		$( "#dealerships tbody").append('<tr><td>No Information Available</td></tr>');
+               }
+               
+               if (fuelOk && serviceOk)
+               {
+                   updateConditionToNormal();              
+               }
             }
 
             $( "#tcLatLng").html( latlngStr );
-        	        	
+        }
+        
+        var lastServicedAt = 0.0
+        
+        function serviceVehicle()
+        {
+            console.debug("The vehicle has been served at "+ currentOdometer);
+        	lastServicedAt = currentOdometer;
+        }
+        
+        function needService(odometer)
+        {
+            console.debug("the last time the vehicle was serviced was at " + lastServicedAt);
+        	// is it time to service the vehicle?
+        	var delta = odometer - lastServicedAt;
+        	console.debug("The odometer delta is " + delta);
+        	return (delta > getServiceFrequency())
+        }
+        
+        function getServiceFrequency()
+        {            
+        	var serviceFrequencyText = $( "#serviceFrequency").val();
+        	console.debug("The current service frequency is " + serviceFrequencyText);
+        	
+        	return inputFieldToNumber( serviceFrequencyText, 5000);        	
+        }
+        
+        function updateConditionToNormal()
+        {
+        	var conditionDiv = $( "#currentCondition");
+        	conditionDiv.html("<strong>Good Condition</strong> - Performing as expected.");
+        	conditionDiv.removeClass("alert-warning");
+        	conditionDiv.addClass("alert-success");
+        }
+        
+        function updateConditionTolowFuel()
+        {
+        	var conditionDiv = $( "#currentCondition");
+        	conditionDiv.html("<strong>Yellow Condition</strong> - Low Fuel");
+        	conditionDiv.removeClass("alert-success");
+        	conditionDiv.addClass("alert-warning");        	
+        }
+        
+        function updateConditionToNeedService(fuelOk)
+        {
+        	var conditionDiv = $( "#currentCondition");
+        	
+        	if (fuelOk)
+        	{
+        	    conditionDiv.html("<strong>Yellow Condition</strong> - Time for Oil Change");
+        		conditionDiv.removeClass("alert-success");
+        		conditionDiv.addClass("alert-warning");        
+        	}
+        	else
+        	{
+        		conditionDiv.html("<strong>Yellow Condition</strong> - Low Fuel & Time for Oil Change");
+        	}
+        }
+        
+        function getFuelThresholdPercentage()
+        {
+        	var fuelThresholdText = $( "#fuelThreshold").val()
+        	console.debug("The current fuel threshold pct is " + fuelThresholdText);
+        	
+        	return inputFieldToNumber( fuelThresholdText, 20 );   	
+        }
+        
+        function inputFieldToNumber( fieldValue, defaultValue )
+        {
+        	if (fieldValue == "")
+        	{
+        		console.debug("No value in field. returning default value");
+        		return defaultValue;
+        	}
+        	
+        	// parse it
+        	var valueAsNumber = parseFloat( fieldValue );
+        	if (valueAsNumber == NaN)
+        	{
+        		console.debug("Unable to parse field...returning default value");
+        		return defaultValue;
+        	}
+        	
+        	return valueAsNumber;
         }
 
         function addLatLngToNewMap( latitude, longitude)
