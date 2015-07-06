@@ -123,4 +123,26 @@ class MapController {
 		
 		render response.json as JSON 
 	}
+	
+	// URL Example: /VehicleSimulator/map/dealershipOpenings?id=123
+	def dealershipOpenings()
+	{
+		println "Dealership Openings"
+		
+		def dealerId = params.id
+		
+		println "The dealer ID is ${dealerId}"
+		
+		def restBuilder = new RestBuilder();
+		
+		def url = grailsApplication.config.io.pivotal.demo.repair.service.url + dealerId
+		
+		println "The url is ${url}"
+		
+		def response = restBuilder.get(url);
+		
+		println "The repair service response (JSON) is ${response.json}"
+		
+		render response.json as JSON
+	}
 }
