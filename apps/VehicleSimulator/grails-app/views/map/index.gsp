@@ -32,10 +32,10 @@
 						<div class="alert alert-success" role="alert"><strong>Good Condition</strong> - Performing as expected.</div>
 					</div>
 					<div class="col-xs-2 buttons">
-						<button type="button" class="btn btn-success" onclick="startTimer();">Start</button>
+						<button id="btnStart" type="button" class="btn btn-success" onclick="startTimer();">Start</button>
 					</div>
 					<div class="col-xs-2 buttons">
-						<button type="button" class="btn btn-danger" onclick="stopTimer();">Stop</button>
+						<button id="btnStop" type="button" class="btn btn-danger" onclick="stopTimer();">Stop</button>
 				  		<g:if test="${flash.message}">
 				  			<div class="message">${flash.message}</div>
 				  		</g:if>
@@ -145,16 +145,23 @@
 
         // The timer used to consistently retrieve Vehicle Data
         // Note: The time is in milliseconds
-        // Note: 5 seconds isn't long enough
         timer.set( { time: 5000, autstart: false });
+
+        // set the buttons to their appropriate inital state
+        $( '#btnStart').prop("disabled",false);
+        $( '#btnStop').prop("disabled", true);
     	
         function startTimer() 
         {
+            $( '#btnStart').prop("disabled",true);
+            $( '#btnStop').prop("disabled", false);
         	timer.play()
         } 
 
         function stopTimer()
         {
+            $( '#btnStart').prop("disabled",false);
+            $( '#btnStop').prop("disabled", true);
             timer.pause();
         }
         
@@ -268,7 +275,7 @@
                     console.debug("nearestDealershipSuccessCallback()");
                     console.debug(data);
 
-                    var iconUrl = window.grailsSupport.assetsRoot + 'dealership.png';
+                    var iconUrl = window.grailsSupport.assetsRoot + 'dealershipicon.png';
 
 					console.debug('the icon url is ' + iconUrl);
                     
@@ -287,7 +294,7 @@
                         var title = dealership.name + "\n" + 
                         	dealership.address.street + ", " + dealership.address.city + ", " + dealership.address.stateCode + " " + dealership.address.zipcode;
 
-                        addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, title); 
+                        addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, 21, 28, title); 
 
                         $( "#dealerships tbody").append(buildDealershipList(dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance));
                     }
@@ -300,9 +307,7 @@
                 },
                 error: errorCallback
             
-            });
-			// TODO: Implement
-           
+            });           
         }
 
         function nearestGasStationErrorCallback( jqXHR, textStatus, errorThrown)
@@ -312,17 +317,15 @@
             console.debug( jqXHR, textStatus, errorThrown );            
         }
 
-        function addMarkerToMap(map, lat, lng, iconUrl, title)
+        function addMarkerToMap(map, lat, lng, iconUrl, iconSizeX, iconSizeY, title)
         {
             var latlng = new google.maps.LatLng ( lat, lng );
             
             var mapIcon = {
                     url: iconUrl,
-                    size: new google.maps.Size(71,71),
+                    size: new google.maps.Size(iconSizeX, iconSizeY),
                     orign: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(50,50)
-            
+                    anchor: new google.maps.Point(0, iconSizeY)
             }
 
             var markerOptions = {
@@ -354,7 +357,7 @@
                     console.debug("jqXHR...");
                     console.debug( jqXHR );
 
-                    var iconUrl = window.grailsSupport.assetsRoot + 'gasstation.png';
+                    var iconUrl = window.grailsSupport.assetsRoot + 'gasstationicon.png';
                     
                     console.debug('the icon url is ' + iconUrl);
                     
@@ -371,7 +374,7 @@
 
                         console.debug("Adding gas station " + gasStation.Name + " to the map. (" + gasStation.Lat + ", " + gasStation.Lng + ")");                        
 
-                        addMarkerToMap(map, gasStation.Lat, gasStation.Lng, iconUrl, gasStation.Name + "\n" + gasStation.Address + "\n");
+                        addMarkerToMap(map, gasStation.Lat, gasStation.Lng, iconUrl, 20, 20, gasStation.Name + "\n" + gasStation.Address);
 
                         $( "#gasStations tbody").append(buildGasStationList( gasStation.Name, gasStation.Address));
                     }
