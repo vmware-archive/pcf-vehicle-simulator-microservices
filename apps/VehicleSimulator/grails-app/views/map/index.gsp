@@ -124,7 +124,7 @@
 	</div>    
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>    
-    <asset:javascript src="jquery.timer.js"/>
+    <script src="http://rick-ross.com/js/jquery.timer.js"></script>
     <!-- TODO: move key out of the HTML -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBywCGRuSOk1a0hJed2vOn3lZH6OIZbQ0E"
             type="text/javascript"></script>
@@ -133,28 +133,21 @@
     	window.grailsSupport = {
     		assetsRoot : '${ raw(asset.assetPath(src: '')) }'
     	};
-    </g:javascript>
+
+	    function initialize() 
+	    {
+	        var mapOptions = 
+	        {
+	          center: { lat: 39.833333, lng: -98.583333},
+	          zoom: 4
+	        };
+	        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+	    }
+	    google.maps.event.addDomListener(window, 'load', initialize);
+	
+	    // TODO: consider not hardcoding this
+	    var BRAND = "ford";
     
-    <script type="text/javascript">
-
-    function initialize() 
-    {
-        var mapOptions = 
-        {
-          center: { lat: 39.833333, lng: -98.583333},
-          zoom: 4
-        };
-        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    }
-    google.maps.event.addDomListener(window, 'load', initialize);
-
-    // TODO: consider not hardcoding this
-    var BRAND = "ford";
-    
-    </script>
-	    
-    <script type="text/javascript">
-
     	var map;
     	var marker;
     	
@@ -440,7 +433,7 @@
                     // clear the gas stations div
                     $( "#dealerships tbody").empty();
                     
-                    for(var i=0; i<data.dealers.length;i++)
+                    for(var i=0; i< data.dealers.length; i++)
                     {
                         var dealership = data.dealers[i];
 
@@ -520,7 +513,7 @@
                     
                     $( "#gasStations tbody").empty();
                     
-                    for(var i=0; i<data.length;i++)
+                    for(var i=0; i< data.length;i++)
                     {
                         var gasStation = data[i];
 
@@ -580,7 +573,7 @@
                     	$( "#gasStations thead").append("<tr><td>&nbsp;</td><td><strong>Regular</strong></td><td><strong>Mid Grade</strong></td><td><strong>Premium</strong></td></tr>");
                     }
                     
-                    for(var i=0; i<data.stations.length;i++)
+                    for(var i=0; i< data.stations.length;i++)
                     {
                         var gasStation = data.stations[i];
 
@@ -644,6 +637,6 @@
 			$('#' + activeId + "Pill").addClass('active');
         }
         
-    </script>
+    </g:javascript>
   </body>
 </html>

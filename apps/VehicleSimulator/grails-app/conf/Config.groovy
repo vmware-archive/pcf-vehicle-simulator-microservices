@@ -103,8 +103,6 @@ io.pivotal.demo.google.places.gas.url = "http://google-places-service.cfapps.io/
 io.pivotal.demo.dealer.service.url = "http://dealer-service.cfapps.io/"
 io.pivotal.demo.gas.price.service.url = "http://gas-price-service.cfapps.io/"
 
-
-
 // log4j configuration
 log4j.main = {
     // Example of changing the log pattern for the default console appender:
