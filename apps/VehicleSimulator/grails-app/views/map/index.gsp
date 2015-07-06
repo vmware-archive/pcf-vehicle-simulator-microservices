@@ -88,6 +88,8 @@
 						</div>
 						<div class="panel-body">
 					    	<table id="gasStations" class="table table-striped">
+					    		<thead>
+					    		</thead>					    	
 					    		<tbody>
 					    			<tr><td>No Information Available</td></tr>
 					    		</tbody>
@@ -194,7 +196,10 @@
                }
 
                // find the nearest gas stations
-               callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback)
+               // callNearestGasSations( map, data.latitude, data.longitude, nearestGasStationErrorCallback)
+               
+               // find the nearest gas stations with prices..
+               callNearestGasStationsWithPrices( map, data.latitude, data.longitude, nearestGasStationWithPricesErrorCallback)
 
                // find the nearest dealerships
                callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback)               
@@ -284,7 +289,6 @@
                     // clear the gas stations div
                     $( "#dealerships tbody").empty();
                     
-                   
                     for(var i=0; i<data.dealers.length;i++)
                     {
                         var dealership = data.dealers[i];
@@ -299,7 +303,7 @@
                         $( "#dealerships tbody").append(buildDealershipList(dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance));
                     }
 
-                    if (data.length=0)
+                    if (data.dealers.length=0)
                     {
                         $( "#dealerships tbody").append('<tr><td>No Nearby Dealerships</td></tr>');
                     }
@@ -362,9 +366,6 @@
                     console.debug('the icon url is ' + iconUrl);
                     
                     console.debug("There are " + data.length + " gas stations nearby");
-
-                    // clear the gas stations div
-//                    $( "#gasStations").html("");
                     
                     $( "#gasStations tbody").empty();
                     
@@ -386,7 +387,92 @@
                 },
                 error: errorCallback
             })
+        }
+        
+        function nearestGasStationWithPricesErrorCallback( jqXHR, textStatus, errorThrown)
+        {
+            // TODO: show an alert??
+            console.debug("(nearestGasStation) An error occurred");
+            console.debug( jqXHR, textStatus, errorThrown );            
+        }
+
+        function callNearestGasStationsWithPrices(map, lat, lng, errorCallback)
+        {
+            console.debug("Calling the nearest gas stations with prices service");
+            var theUrl = 'map/nearestGasStationsWithPrices?lat=' + lat + '&lng=' + lng + '&distance=5';
+            console.debug('The url is ' + theUrl);
+
+            $.ajax({
+                url: theUrl,
+                type: 'GET',
+                cache: false,
+                success: function (data, textStatus, jqXHR) {
+                    
+                    console.debug("nearestGasStationWithPrices SuccessCallback()");
+                    console.debug( data );
+                    console.debug("textstatus...")
+                    console.debug( textStatus );
+                    console.debug("jqXHR...");
+                    console.debug( jqXHR );
+
+                    var iconUrl = window.grailsSupport.assetsRoot + 'gasstationicon.png';
+                    
+                    console.debug('the icon url is ' + iconUrl);
+                    
+                    console.debug("There are " + data.stations.length + " gas stations w/price nearby");
+                    
+                    $( "#gasStations thead").empty();
+                    $( "#gasStations tbody").empty();
+                    
+                    if (data.stations.length > 0)
+                    {
+                    	$( "#gasStations thead").append("<tr><td>&nbsp;</td><td><strong>Regular</strong></td><td><strong>Mid Grade</strong></td><td><strong>Premium</strong></td></tr>");
+                    }
+                    
+                    for(var i=0; i<data.stations.length;i++)
+                    {
+                        var gasStation = data.stations[i];
+
+                        console.debug("Adding gas station " + gasStation.station + " to the map. (" + gasStation.lat + ", " + gasStation.lng + ")");                        
+
+                        addMarkerToMap(map, gasStation.lat, gasStation.lng, iconUrl, 20, 20, gasStation.station + "\n" + gasStation.address);
+
+                        $( "#gasStations tbody").append(buildGasStationListWithPrices( gasStation.station, gasStation.address, gasStation.distance, 
+                        	gasStation.reg_price, gasStation.reg_date,
+                        	gasStation.mid_price, gasStation.mid_date,
+                        	gasStation.pre_price, gasStation.pre_date));
+                    }
+
+                    if (data.stations.length=0)
+                    {
+                        $( "#gasStations tbody").append('<tr><td>No Nearby Gas Stations</td></tr>');
+                    }
+                    
+                },
+                error: errorCallback
+            })
         }  
+
+        function buildGasStationListWithPrices(name, address, distance, regPrice, regDate, midPrice, midDate, premiumPrice, premiumDate)        
+        {
+        	var html = "<tr><td><strong>" + name + "</strong><br/>" + address + "<br/>" + distance + "</td><td>" +  
+        		buildPriceFieldText( regPrice, regDate ) + "</td><td>" + 
+        		buildPriceFieldText( midPrice, midDate ) + "</td><td>" + 
+        		buildPriceFieldText( premiumPrice, premiumDate ) + "</td></tr>";
+        		
+        	return html; 
+        }
+        
+        function buildPriceFieldText( price, date)
+        {
+           var text = price;
+           if (price != "N/A")
+           	   text = "$" + price;
+           	   
+           text = text + "<br/>" + date;
+           
+           return text;
+        }
 
         function buildGasStationList(name, address)
         {
