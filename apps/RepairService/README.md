@@ -25,7 +25,10 @@ The url to access this service when running locally is http://localhost:[port]/S
 
 ## Assumptions
 1. The dealer ID can be any valid string and is not checked
-2. The returned date is always today's date
-3. If the current date lands on a Sunday, no openings are returned because they are closed
+2. The returned date is either today or a date in the future
+3. If the current date lands on a Sunday, the service will look at the next business day for openings
 4. The openings are random 30 minute slots between 8:00 AM and 6:00 PM
 5. The duration is always 30 minutes
+6. The time slots are always in the future. The service takes into account the current time and considers the start and end times of the day
+7. The service is limited to a total of 6 slots
+

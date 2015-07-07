@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/")
 public class RepairController {
 	
+	private static int START_OF_DAY = 8;
+	private static int END_OF_DAY = 18; // military time
+	private static int MAX_NUMBER_OF_SLOTS = 6;
+	
 	@RequestMapping(method=RequestMethod.GET, value="/")
 	@ResponseBody
 	public String ping()
@@ -31,37 +35,58 @@ public class RepairController {
 		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
 		
 		Calendar today = Calendar.getInstance();
-			
-		// is today sunday? - if so, we're closed 
-		if (Calendar.SUNDAY == today.get(Calendar.DAY_OF_WEEK))
-			return schedules; 
 		
+		// get the current hour
+		int currentHour = today.get(Calendar.HOUR_OF_DAY);
+		
+		float startAt = (float) currentHour + 1;
+		if (currentHour < START_OF_DAY)
+		{
+			startAt = START_OF_DAY;
+		}
+		else if (currentHour > END_OF_DAY)
+		{
+			// at the end of the day, so let's look at tomorrow
+			startAt = START_OF_DAY;
+			today.add(Calendar.DAY_OF_MONTH, 1);
+		}
+		
+		// is the day sunday? - if so, we're closed so add another day
+		if (Calendar.SUNDAY == today.get(Calendar.DAY_OF_WEEK))
+			today.add(Calendar.DAY_OF_MONTH,  1);
+		
+		findSlots(schedules, today, startAt, dealerId);
+		if (schedules.size() != MAX_NUMBER_OF_SLOTS)
+		{
+			today.add(Calendar.DAY_OF_MONTH, 1);
+			findSlots(schedules, today, START_OF_DAY, dealerId );
+		}
+		
+		return schedules;
+	}
+
+	
+	private void findSlots(List<Schedule> schedules, Calendar aDate, float startAt, String dealerId)
+	{
 		Random randomGenerator = new Random();
 		
-		// clear the time from the date
-		today.clear(Calendar.HOUR);
-		today.clear(Calendar.HOUR_OF_DAY);
-		today.clear(Calendar.MINUTE);
-		today.clear(Calendar.SECOND);
-		today.clear(Calendar.MILLISECOND);
-		
-		// no? then lets go through slots of time in 30 min increments and randomly determine if we're open
-		// we're hard coding the opening times from 8:00 AM - 6:00 PM 
-		for(float i=(float) 8.5;i<18.0;i=(float) (i+0.5))
+		for(float i = startAt; i < END_OF_DAY; i+=0.5f)
 		{
+			// limit the number of slots that are returned
+			if (schedules.size() == MAX_NUMBER_OF_SLOTS)
+				break;
+			
 			boolean isOpen = randomGenerator.nextBoolean();
 			
 			if (isOpen)
 			{
 				String startTime = convertFloatToTime(i);
 								
-				Schedule s = new Schedule(dealerId, convertCalendarToDateString(today), startTime, "30 minutes", 30);
+				Schedule s = new Schedule(dealerId, convertCalendarToDateString(aDate), startTime, "30 minutes", 30);
 				
 				schedules.add(s);
 			}
 		}
-		
-		return schedules;
 	}
 	
 	private static String convertCalendarToDateString(Calendar date)
@@ -94,4 +119,5 @@ public class RepairController {
 
         return output.toString().replace(".",":") + amPm;
     }
+	
 }
