@@ -79,7 +79,7 @@ public class RepairController {
     {
 		float originalInput = input;
 		float nonMilitaryTime = input;
-		if (nonMilitaryTime > 12)
+		if (nonMilitaryTime >= 13)
 			nonMilitaryTime = nonMilitaryTime - 12.0f;
 		
         String input_string = Float.toString(nonMilitaryTime);
