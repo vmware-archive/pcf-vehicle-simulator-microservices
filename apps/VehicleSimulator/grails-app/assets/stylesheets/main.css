@@ -76,6 +76,9 @@
 	padding:10px;
 }
 
+/* commented out because it conflicts with modal dialog */
+/*
 button {
 	width:100%;
 }
+*/

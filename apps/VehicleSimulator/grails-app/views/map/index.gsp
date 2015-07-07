@@ -122,6 +122,42 @@
 		    </div>
 	  	</div>
 	</div>    
+
+	<!--  dealer popup  -->
+	<div id="DealerModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalDealershipName">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	        	<span aria-hidden="true">x</span>
+	        </button>
+	        <h4 class="modal-title" id="modalDealershipName">Dealership Name</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<p id="dealerAddress"></p>
+	      	<table id="dealerSchedule" class="table table-striped">
+	      		<thead>
+	      			<tr>
+	      				<td><center><strong>Date</strong></center></td>
+	      				<td><center><strong>Time</strong></center></td>
+	      				<td><center><strong>Duration</strong></center></td>
+	      				<td>&nbsp;</td>
+	      			</tr>
+	      		</thead>
+	      		<tbody>
+	      			<tr>
+	      				<td colspan="4"></td>
+	      			</tr>
+	      		</tbody>
+	      	</table>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>    
     <script src="http://rick-ross.com/js/jquery.timer.js"></script>
@@ -247,7 +283,7 @@
                		
                		updateConditionToNeedService(fuelOk);
                		
-               		callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback);
+               		callNearestDealerships( map, BRAND, data.latitude, data.longitude, nearestDealershipErrorCallback, fuelOk);
                }
                else
                {
@@ -410,7 +446,7 @@
             console.debug( jqXHR, textStatus, errorThrown );   
         }
 
-        function callNearestDealerships(map, brand, lat, lng, errorCallback)
+        function callNearestDealerships(map, brand, lat, lng, errorCallback, fuelOk)
         {
 			console.debug("Calling the nearest dealerships service")
 			var theUrl = 'map/nearestDealerships?brand=' + brand + '&lat=' + lat + "&lng=" + lng
@@ -444,12 +480,18 @@
 
                         addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, 21, 28, title); 
 
-                        $( "#dealerships tbody").append(buildDealershipList(dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance));
+                        $( "#dealerships tbody").append(buildDealershipList(dealership.dealerId, dealership.name, dealership.address.street, dealership.address.city, dealership.address.stateCode, dealership.address.zipcode, dealership.distance));
                     }
 
                     if (data.dealers.length=0)
                     {
                         $( "#dealerships tbody").append('<tr><td>No Nearby Dealerships</td></tr>');
+                    }
+                    
+                    // only switch to dealers if the fuel situation is fine
+                    if (fuelOk)
+                    {
+                    	activeTab('gasStations', 'dealerships')
                     }
                     
                 },
@@ -592,6 +634,9 @@
                         $( "#gasStations tbody").append('<tr><td>No Nearby Gas Stations</td></tr>');
                     }
                     
+                    // make the gas stations tab active
+                    activeTab('dealerships', 'gasStations')
+                    
                 },
                 error: errorCallback
             })
@@ -624,9 +669,11 @@
             return html;
         }
 
-        function buildDealershipList(name, street, city, state, zipCode, distance)
+        function buildDealershipList(id, name, street, city, state, zipCode, distance)
         {
-            var html = '<tr><td><strong>' + name + "</strong></td><td>" + street + " " + city + " " + state + " " + zipCode + "<br/>" + "Distance: " + distance + " miles" + "</td></tr>";
+        	var address = street + " " + city + " " + state + " " + zipCode; 
+        	var onClickHandler = "showDealer(" + id + ", '" + name + "', '" + address + "');";
+            var html = '<tr><td><strong><a href="#" onclick="' + onClickHandler + '">' + name + "</a></strong></td><td>" + address + "<br/>" + "Distance: " + distance + " miles" + "</td></tr>";
             return html;
         }
 
@@ -635,6 +682,71 @@
 			$('#' + disabledId + "Pill").removeClass('active');
 			$('#' + activeId).show();
 			$('#' + activeId + "Pill").addClass('active');
+        }
+        
+        function showDealer(dealerId, dealerName, dealerAddress)
+        {
+        	// for now just show the modal dialog
+        	// TODO: need to do a lot more than this :)         	
+        	// $("#DealerModal").modal('show');
+        	
+        	// set up the other text
+        	$( "#modalDealershipName").text(dealerName);
+        	$( "#dealerAddress").text(dealerAddress);
+        	
+        	// this is done from the service callback
+        	callDealerScheduleAvailabilityService( dealerId, dealerScheduleAvailaiblityErrorCallback);
+        }
+        
+        function dealerScheduleAvailaiblityErrorCallback(jqXHR, textStatus, errorThrown)
+        {
+            // TODO: show an alert??
+            console.debug("(dealerScheduleAvailability) An error occurred");
+            console.debug( jqXHR, textStatus, errorThrown );      
+        }
+        
+        function callDealerScheduleAvailabilityService(dealerId, errorCallback)
+        {
+        	console.debug("Calling the dealer schedule availabiity service for "+ dealerId);
+        	var theUrl = "map/dealershipOpenings?id=" + dealerId;
+        	console.debug("The url is " + theUrl);
+        	
+        	$.ajax({
+        		url: theUrl,
+        		type: 'GET',
+        		cache: false,
+        		success: function (data, textStatus, jqXHR) {
+        		
+        			console.debug("There are " + data.length + "openings");
+        			
+        			$( "#dealerSchedule tbody").empty();
+        			
+        			for(var i=0; i < data.length; i++)
+        			{
+        				var schedule = data[i];
+        				
+        				console.debug("Adding schedule " + schedule.date + " " + schedule.startTime + " " + schedule.duration);
+        				
+        				$( "#dealerSchedule tbody").append(buildScheduleRow(schedule.date, schedule.startTime, schedule.duration ))
+        			}
+        			
+        			if (data.length == 0)
+        			{
+        			    $( "#dealerSchedule tbody").append('<tr><td co>Sorry there are no openings today</td></tr>');
+        			}
+        			
+        			// now show the modal dialog
+        			$("#DealerModal").modal('show');
+        		},
+        		error: errorCallback
+        	})
+        }
+        
+        function buildScheduleRow(aDate, aTime, duration)
+        {
+        	var html = '<tr><td><center>' + aDate + '</center></td>' + '<td style="text-align: right">' + aTime + '</td>' + '<td><center>' + duration + '</center></td>' + '<td><button type="button" class="btn btn-primary">Book it!</button></td></tr>';
+	      				
+	      	return html;        
         }
         
     </g:javascript>
