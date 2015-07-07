@@ -81,7 +81,7 @@
 							<li class="list-group-item">
 								<label>Fuel Level:</label> 
 								<div class="progress">
-									<div id="fuelLevel" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"><span class="sr-only">40% Complete (success)</span></div>
+									<div id="fuelLevel" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 2%;">0%</div>
 								</div>
 							</li>
 							<li class="list-group-item">
@@ -227,9 +227,9 @@
         	
         	currentOdometer = data.odometer;
 
-        	$( "#tcOdometer").html( data.odometer == null ? "n/a" : data.odometer);
-        	$( "#tcFuelLevel").html( data.fuelLevel == null ? "n/a" : data.fuelLevel);
+        	$( "#tcOdometer").html( data.odometer == null ? "n/a" : data.odometer.toFixed(2) + " miles");
         	$('#fuelLevel').css('width', data.fuelLevel+'%').attr('aria-valuenow', data.fuelLevel);
+        	$('#fuelLevel').css('width', data.fuelLevel+'%').html(data.fuelLevel.toFixed(2) + '%');
         	
         	var fuelThresholdPct = getFuelThresholdPercentage();
         	console.debug("The current fuel threshold percentage is " + fuelThresholdPct);
@@ -673,7 +673,7 @@
         {
         	var address = street + " " + city + " " + state + " " + zipCode; 
         	var onClickHandler = "showDealer(" + id + ", '" + name + "', '" + address + "');";
-            var html = '<tr><td><strong><a href="#" onclick="' + onClickHandler + '">' + name + "</a></strong></td><td>" + address + "<br/>" + "Distance: " + distance + " miles" + "</td></tr>";
+            var html = '<tr><td><strong><a href="#" onclick="' + onClickHandler + '">' + name + "</a></strong></td><td>" + address + "<br/>" + "Distance: " + distance.toFixed(2) + " miles" + "</td></tr>";
             return html;
         }
 
