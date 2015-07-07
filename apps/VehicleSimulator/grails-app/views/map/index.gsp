@@ -273,7 +273,10 @@
                		// clear the gas stations               		
                		$( "#gasStations thead").empty();
                     $( "#gasStations tbody").empty();   
-                    $( "#gasStations tbody").append('<tr><td>No Information Available</td></tr>');            		
+                    $( "#gasStations tbody").append('<tr><td>No Information Available</td></tr>');        
+                    
+                    // remove markers from the map
+                    clearGasStationMarkers();    		
                	}
 
                // find the nearest dealerships
@@ -287,13 +290,15 @@
                }
                else
                {
-               		serviceOk = true;
-               		
-               		// TODO: How can we hide the tab?
+               		serviceOk = true;               		
                		
                		// clear the dealerships
                		$( "#dealerships tbody").empty();
                		$( "#dealerships tbody").append('<tr><td>No Information Available</td></tr>');
+               		
+               		// remove the markers from the map
+               		clearDealershipMarkers();
+               		
                }
                
                if (fuelOk && serviceOk)
@@ -506,8 +511,11 @@
             console.debug("(nearestGasStation) An error occurred");
             console.debug( jqXHR, textStatus, errorThrown );            
         }
+        
+        var gasStationMarkers = [];
+        var dealershipMarkers = [];
 
-        function addMarkerToMap(map, lat, lng, iconUrl, iconSizeX, iconSizeY, title)
+        function addMarkerToMap(map, lat, lng, iconUrl, iconSizeX, iconSizeY, title, isGasStation)
         {
             var latlng = new google.maps.LatLng ( lat, lng );
             
@@ -526,6 +534,38 @@
             }
 
             var marker = new google.maps.Marker( markerOptions );
+            
+            if (isGasStation)
+            {
+            	console.debug("Adding marker to gas station array");
+            	gasStationMarkers.push(marker);
+            }
+            else
+            {
+            	console.debug("Adding marker to dealership array");
+            	dealershipMarkers.push(marker);
+            }
+        }
+        
+        function clearGasStationMarkers()
+        {
+        	removeMarkerArrayFromMap( gasStationMarkers );
+        }
+        
+        function clearDealershipMarkers()
+        {
+        	removeMarkerArrayFromMap( dealershipMarkers );
+        }
+        
+        function removeMarkerArrayFromMap( aMarkerArray )
+        {
+        	for(var i = 0;i < aMarkerArray.length; i++)
+        	{
+        		aMarkerArray[i].setMap(null);
+        	}
+        	
+        	// clear the array
+        	aMarkerArray = []; 
         }
 
         function callNearestGasSations(map, lat, lng, errorCallback)
