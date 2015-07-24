@@ -94,26 +94,47 @@ environments {
 		
 		io.pivotal.demo.rabbitmq.uri = "amqp://dzmmizcc:v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM@tiger.cloudamqp.com/dzmmizcc"
 		io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
+		io.pivotal.demo.rabbitmq.available = false
     }
     production {
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
 		
 		def cloud = null
+		def applicationInstanceInfo = null
 		try {
 			cloud = new CloudFactory().cloud
 		}
 		catch(CloudException ce)
 		{
 			printf "******** FATAL ERROR! An exception occurred while creating a CloudFactory ***********"
-			printf "Exception: " + ce
+			printf "Exception: " + ce.toString();
 			
 		}
 		
-		// Pull connection details from VCAP_SERVICES using Spring Cloud Libraries
-	 	def rabbitConfig = cloud?.getServiceInfo('vehicle-rabbit-service')
-		io.pivotal.demo.rabbitmq.uri = rabbitConfig?.uri		
-		io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
+		try
+		{
+			io.pivotal.demo.rabbitmq.available = false
+			io.pivotal.demo.rabbitmq.uri = "";
+			io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
+			
+			// Pull connection details from VCAP_SERVICES using Spring Cloud Libraries
+		 	def rabbitConfig = cloud?.getServiceInfo('vehicle-rabbit-service')
+			if (rabbitConfig != null)
+			{
+				io.pivotal.demo.rabbitmq.uri = rabbitConfig?.uri						
+				io.pivotal.demo.rabbitmq.available = true
+			}
+			else
+			{
+				printf "******** WARNING: Unable to grab connection details *******";				
+			}
+		}
+		catch(Exception e)
+		{
+			printf "****** Exception while getting service details "
+			printf e.toString()
+		}
     }
 }
 

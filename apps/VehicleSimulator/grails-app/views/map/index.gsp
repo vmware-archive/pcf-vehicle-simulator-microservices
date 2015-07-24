@@ -121,8 +121,16 @@
 			    </div>
 		    </div>
 	  	</div>
-	  	<div class="buttons">
-	  		<button id="btnKillApp" type="button" class="class="btn btn-danger" title="Kill the Application" onclick="killApp();">Kill The App</button>
+	  	<div class="row" style="width:95%;float:right;">
+	  		<div class="col-xs-2 buttons">
+	  			<button id="btnKillApp" type="button" class="btn btn-danger" title="Kill the Application" onclick="killApp();">Kill The App</button>
+	  		</div>
+	  		<div class="col-xs-3">
+	  			<g:ipAddress>IP Address:</g:ipAddress>
+	  		</div>
+	  		<div id="currentCondition" class="col-xs-3" role="alert">
+	  			<g:haveRabbitMqConnection>Bound to Rabbit MQ?</g:haveRabbitMqConnection>
+			</div>	  			  		
 	  	</div>
 	</div>    
 

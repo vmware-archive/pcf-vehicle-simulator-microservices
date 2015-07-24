@@ -1,17 +1,20 @@
 package io.pivotal.demo
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import grails.converters.JSON
 import grails.plugins.rest.client.RestBuilder
 import io.pivotal.demo.VehicleMessageConsumer
 
+@Component
 class MapController {
 	
 	def grailsApplication
 	
 	def static vehicleMessageConsumer
-	
+			
     def index() 
 	{ 
 		flash.message = null
@@ -20,8 +23,15 @@ class MapController {
 	def startTracking()
 	{
 		println "startTracking()"
-					
-		flash.message = "Vehicle tracking has been STARTED."
+		
+		if (!grailsApplication.config.io.pivotal.demo.rabbitmq.available)
+		{
+			flash.message "Application not bound to RabbitMQ"
+		}
+		else
+		{
+			flash.message = "Vehicle tracking has been STARTED."
+		}
 		
 		render view: 'index'
 	}

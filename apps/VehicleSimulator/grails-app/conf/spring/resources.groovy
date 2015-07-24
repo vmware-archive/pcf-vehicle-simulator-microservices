@@ -1,3 +1,5 @@
+import org.springframework.cloud.CloudFactory;
+
 import grails.util.Environment
 import io.pivotal.demo.VehicleMessageConsumer
 
@@ -9,4 +11,5 @@ beans = {
 	}
 	
 	cloudFactory(org.springframework.cloud.CloudFactory)
+	
 }
