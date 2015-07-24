@@ -7,4 +7,6 @@ beans = {
 		uri = application.config.io.pivotal.demo.rabbitmq.uri
 		queueName = application.config.io.pivotal.demo.rabbitmq.queue
 	}
+	
+	cloudFactory(org.springframework.cloud.CloudFactory)
 }

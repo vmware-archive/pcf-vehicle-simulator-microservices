@@ -145,4 +145,15 @@ class MapController {
 		
 		render response.json as JSON
 	}
+	
+	def killApp()
+	{
+		println "killing App()"
+					
+		flash.message = "Shutdown of the Vehicle App."
+		
+		render view: 'index'
+			   
+		System.exit(1);
+	}
 }

@@ -1,3 +1,6 @@
+import org.springframework.cloud.CloudFactory
+import org.springframework.cloud.CloudException
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -88,16 +91,36 @@ grails.hibernate.osiv.readonly = false
 environments {
     development {
         grails.logging.jul.usebridge = true
+		
+		io.pivotal.demo.rabbitmq.uri = "amqp://dzmmizcc:v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM@tiger.cloudamqp.com/dzmmizcc"
+		io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
     }
     production {
         grails.logging.jul.usebridge = false
         // TODO: grails.serverURL = "http://www.changeme.com"
+		
+		def cloud = null
+		try {
+			cloud = new CloudFactory().cloud
+		}
+		catch(CloudException ce)
+		{
+			printf "******** FATAL ERROR! An exception occurred while creating a CloudFactory ***********"
+			printf "Exception: " + ce
+			
+		}
+		
+		// Pull connection details from VCAP_SERVICES using Spring Cloud Libraries
+	 	def rabbitConfig = cloud?.getServiceInfo('vehicle-rabbit-service')
+		io.pivotal.demo.rabbitmq.uri = rabbitConfig?.uri		
+		io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
     }
 }
 
-io.pivotal.demo.rabbitmq.uri = "amqp://dzmmizcc:v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM@tiger.cloudamqp.com/dzmmizcc"
-io.pivotal.demo.rabbitmq.queue = "vehicle-data-queue"
 
+
+// TODO: convert these to be pulled from custom services (CUPS)
+//
 io.pivotal.demo.google.geocode.url = "http://google-reverse-geocode-service.cfapps.io/"
 io.pivotal.demo.google.places.gas.url = "http://google-places-service.cfapps.io/nearby/gas_station/"
 io.pivotal.demo.dealer.service.url = "http://dealer-service.cfapps.io/"

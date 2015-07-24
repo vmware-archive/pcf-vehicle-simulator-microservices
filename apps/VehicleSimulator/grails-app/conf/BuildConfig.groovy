@@ -55,6 +55,8 @@ grails.project.dependency.resolution = {
 		compile "com.fasterxml.jackson.core:jackson-core:2.5.4"
 		compile "com.fasterxml.jackson.core:jackson-databind:2.5.4"
 		compile "com.fasterxml.jackson.core:jackson-annotations:2.5.4"
+		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:1.0.0.RELEASE"
+		compile "org.springframework.cloud:spring-cloud-spring-service-connector:1.0.0.RELEASE"
     }
 
     plugins {
@@ -69,7 +71,7 @@ grails.project.dependency.resolution = {
 		// plugins added for the Ford Demo
 		compile ":google-visualization:0.7"
 		compile ":rest-client-builder:2.1.1"
-
+		
         // plugins needed at runtime but not for compilation
         //runtime ":hibernate4:4.3.8.1" // or ":hibernate:3.6.10.18"
         //runtime ":database-migration:1.4.0"

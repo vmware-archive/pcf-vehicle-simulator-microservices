@@ -121,6 +121,9 @@
 			    </div>
 		    </div>
 	  	</div>
+	  	<div class="buttons">
+	  		<button id="btnKillApp" type="button" class="class="btn btn-danger" title="Kill the Application" onclick="killApp();">Kill The App</button>
+	  	</div>
 	</div>    
 
 	<!--  dealer popup  -->
@@ -787,6 +790,26 @@
         	var html = '<tr><td><center>' + aDate + '</center></td>' + '<td style="text-align: right">' + aTime + '</td>' + '<td><center>' + duration + '</center></td>' + '<td><button type="button" class="btn btn-primary">Book it!</button></td></tr>';
 	      				
 	      	return html;        
+        }
+        
+        function killApp()
+        {
+        	console.debug("killing the application...");
+        	var theUrl = "map/killApp";
+        	console.debug("The url is " + theUrl);
+        	
+        	$.ajax({
+        		url: theUrl,
+        		type: 'GET',
+        		cache: false,
+        		success: function (data, textStatus, jqXHR) {
+        			console.debug("The call to kill the app was successful");
+        		},
+        		error: function (jqXHR, textStatus, errorThrown) {
+		            console.debug("(killApp) An error occurred");
+		            console.debug( jqXHR, textStatus, errorThrown );   
+        		}
+        	})
         }
         
     </g:javascript>

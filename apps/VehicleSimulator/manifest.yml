@@ -6,3 +6,4 @@ applications:
   host: ford-demo
   path: ./target/VehicleSimulator-0.1.war
   timeout: 180
+#  services: [vehicle-rabbit-service]
