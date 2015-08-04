@@ -1,9 +1,0 @@
----
-applications:
-- name: VehicleSimulator 
-  memory: 768MB 
-  instances: 1
-  host: ford-demo
-  path: ./target/VehicleSimulator-0.1.war
-  timeout: 180
-#  services: [vehicle-rabbit-service]
