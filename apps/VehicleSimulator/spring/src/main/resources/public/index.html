@@ -24,29 +24,16 @@
 				</button>
 			</div>
 			<div class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Home</a></li>
-				</ul>
-				<div class="row" style="width:95%;float:right;">
-					<div class="col-xs-2">
+				<div class="row">
+					<div class="col-xs-3">
 						<div class="input-group buttons">
 							<span class="input-group-addon" id="lblFuel">Fuel</span>
 							<input class="form-control" id="fuelThreshold" name="fuelThreshold" type="number" value="20" aria-describedby="lblFuel">
 							<span class="input-group-addon">%</span>
 						</div>
 					</div>
-					<div class="col-xs-3">
-						<div class="input-group buttons">
-							<span class="input-group-addon" id="lblSvcFrequency">Svc</span>
-							<input class="form-control" id="serviceFrequency" name="serviceFrequency" type="number" value="5000" aria-describedby="lblSvcFrequency">
-							<span class="input-group-addon">Miles</span>							
-						</div>
-					</div>
-					<div class="col-xs-1 buttons">
-						<button id="btnResetService" type="button" class="btn btn-primary" title="Mark the vehicle as serviced" data-ng-click="serviceVehicle();">Svc</button>
-					</div>
 					<div class="col-xs-4 alerts">
-						<div id="currentCondition" class="alert {{conditionClass}}" role="alert"><strong>{{conditionStrongText}}</strong> - {{conditionText}}</div>
+						<div id="currentFuelCondition" class="alert {{conditionFuelClass}}" role="alert"><strong>{{conditionFuelStrongText}}</strong> - {{conditionFuelText}}</div>
 					</div>
 					<div class="col-xs-1 buttons">
 						<button id="btnStart" type="button" class="btn btn-success" data-ng-click="startTimer()">Start</button>
@@ -54,6 +41,21 @@
 					<div class="col-xs-1 buttons">
 						<button id="btnStop" type="button" class="btn btn-danger" data-ng-click="stopTimer();">Stop</button>
 				  	</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-3">
+						<div class="input-group buttons">
+							<span class="input-group-addon" id="lblSvcFrequency">Service Every</span>
+							<input class="form-control" id="serviceFrequency" name="serviceFrequency" type="number" value="5000" aria-describedby="lblSvcFrequency">
+							<span class="input-group-addon">Miles</span>							
+						</div>
+					</div>
+					<div class="col-xs-4 alerts">
+						<div id="currentRepairCondition" class="alert {{conditionRepairClass}}" role="alert"><strong>{{conditionRepairStrongText}}</strong> - {{conditionRepairText}}</div>
+					</div>
+					<div class="col-xs-1 buttons">
+						<button id="btnResetService" type="button" class="btn btn-primary" title="Mark the vehicle as serviced" data-ng-click="serviceVehicle();">Service Vehicle</button>
+					</div>
 				</div>
 				
 			</div><!--/.nav-collapse -->

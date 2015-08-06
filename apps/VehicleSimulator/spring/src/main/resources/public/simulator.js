@@ -9,9 +9,10 @@ angular.module('vehicleSimulator', [])
 		var serviceOk;
     
 	    $scope.fuelLevel = 0;
-	    $scope.conditionClass = "alert-success";
-	    $scope.conditionStrongText = "Good Condition";
-	    $scope.conditionText = "Performing as expected";
+	    
+	    resetFuelCondition();
+	    resetServiceCondition();
+
 	    $scope.serverIpAddress = "Unknown";
 	    $scope.boundToRabbitMQ = "Unknown";
 
@@ -70,18 +71,25 @@ angular.module('vehicleSimulator', [])
 	                     map = addLatLngToNewMap( data.latitude, data.longitude);
 	                   }
 	                   
-	                   var fuelOk = checkFuel();
-	                   var serviceOk = checkService();
-	                                  
-	                   if (fuelOk && serviceOk)
-	                   {
-	                       $scope.conditionClass = "alert-success";
-	                       $scope.conditionStrongText = "Good Condition";
-	                       $scope.conditionText = "Performing as expected";
-	                   }
+	                   checkFuel();
+	                   checkService();	                                 
 	                }
 	            });
 	    };     
+	    
+	    function resetServiceCondition()
+	    {
+		    $scope.conditionRepairClass = "alert-success";
+		    $scope.conditionRepairStrongText = "Good Condition";
+		    $scope.conditionRepairText = "Vehicle performing as expected";
+	    }
+	    
+	    function resetFuelCondition()
+	    {
+		    $scope.conditionFuelClass = "alert-success";
+		    $scope.conditionFuelStrongText = "Fuel";
+		    $scope.conditionFuelText = "At an acceptable level";
+	    }
 	            
 	    function checkFuel() {
 			fuelOk = true;
@@ -90,9 +98,9 @@ angular.module('vehicleSimulator', [])
 	    	var fuelThresholdPct = (fuelThresholdText == "") ? 20 : parseFloat( fuelThresholdText );
 	
 	    	if ($scope.fuelLevel < fuelThresholdPct) {
-	            $scope.conditionClass = "alert-warning";
-	            $scope.conditionStrongText = "Yellow Condition";
-	            $scope.conditionText = "Low Fuel";
+	            $scope.conditionFuelClass = "alert-warning";
+	            $scope.conditionFuelStrongText = "Yellow Condition";
+	            $scope.conditionFuelText = "Low Fuel";
 	    		
 	    		callNearestGasStationsWithPrices( map, $scope.latitude, $scope.longitude);
 				fuelOk = false;
@@ -103,6 +111,8 @@ angular.module('vehicleSimulator', [])
 				$( "#gasStations tbody").empty();    
 				
 				clearGasStationMarkers();
+				
+				resetFuelCondition();
 			}
 			
 			return fuelOk;
@@ -142,9 +152,9 @@ angular.module('vehicleSimulator', [])
 			
 	    	if (delta > serviceFrequencyNum) {
 				serviceOk = false;
-	            $scope.conditionClass = "alert-warning";
-	            $scope.conditionStrongText = "Yellow Condition";
-	            $scope.conditionText = "Time for an oil change.";
+	            $scope.conditionRepairClass = "alert-warning";
+	            $scope.conditionRepairStrongText = "Yellow Condition";
+	            $scope.conditionRepairText = "Time for an oil change.";
 	            
 				callNearestDealerships( map, BRAND, $scope.latitude, $scope.longitude);
 			}
@@ -153,6 +163,8 @@ angular.module('vehicleSimulator', [])
 				$( "#dealerships tbody").empty();
 				
 				clearDealershipMarkers();
+				
+				resetServiceCondition();
 			}
 			        	
 		};
