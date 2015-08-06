@@ -105,17 +105,17 @@
 								<thead>
 									<tr ng-show="stations.length > 0">
 										<td>&nbsp;</td>
-										<td><strong>Regular</strong></td>
-										<td><strong>Mid Grade</strong></td>
-										<td><strong>Premium</strong></td>
+										<td style="text-align: center;"><strong>Regular</strong></td>
+										<td style="text-align: center;"><strong>Mid Grade</strong></td>
+										<td style="text-align: center;"><strong>Premium</strong></td>
 									</tr>
 								</thead>					    	
 								<tbody>
 									<tr data-ng-repeat="station in stations">
 										<td><strong>{{ station.station }}</strong><br/>{{ station.address }}<br/>{{ station.distance }}</td>
-										<td data-ng-init="price = (station.reg_price == 'N/A' ? '' : '$') + station.reg_price">{{ price }}<br/>{{ station.reg_date }}</td>
-										<td data-ng-init="price = (station.mid_price == 'N/A' ? '' : '$') + station.mid_price">{{ price }}<br/>{{ station.mid_date }}</td>
-										<td data-ng-init="price = (station.pre_price == 'N/A' ? '' : '$') + station.pre_price">{{ price }}<br/>{{ station.pre_date }}</td>
+										<td style="vertical-align:middle; text-align: center;" data-ng-init="price = (station.reg_price == 'N/A' ? '' : '$') + station.reg_price">{{ price }}</td>
+										<td style="vertical-align:middle; text-align: center;" data-ng-init="price = (station.mid_price == 'N/A' ? '' : '$') + station.mid_price">{{ price }}</td>
+										<td style="vertical-align:middle; text-align: center;" data-ng-init="price = (station.pre_price == 'N/A' ? '' : '$') + station.pre_price">{{ price }}</td>
 									</tr>
 								</tbody>
 					    	</table>
