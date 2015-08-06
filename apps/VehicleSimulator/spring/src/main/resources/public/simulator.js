@@ -101,7 +101,9 @@ angular.module('vehicleSimulator', [])
 				// clear the gas stations               		
 				$( "#gasStations thead").empty();
 				$( "#gasStations tbody").empty();   
-				$( "#gasStations tbody").append('<tr><td>No Information Available</td></tr>');            		
+				$( "#gasStations tbody").append('<tr><td>No Information Available</td></tr>');   
+				
+				clearGasStationMarkers();
 			}
 			
 			return fuelOk;
@@ -123,7 +125,7 @@ angular.module('vehicleSimulator', [])
 	                    var gasStation = data.stations[i];
 	
 	                    var title = gasStation.station + "\n" + gasStation.address;
-	                    addMarkerToMap(map, gasStation.lat, gasStation.lng, iconUrl, 20, 20, title);
+	                    addMarkerToMap(map, gasStation.lat, gasStation.lng, iconUrl, 20, 20, title, true);
 	                }
 	                
 	                // make the gas stations tab active
@@ -151,6 +153,8 @@ angular.module('vehicleSimulator', [])
 				// clear the dealerships
 				$( "#dealerships tbody").empty();
 				$( "#dealerships tbody").append('<tr><td>No Information Available</td></tr>');
+				
+				clearDealershipMarkers();
 			}
 			        	
 		};
@@ -176,7 +180,7 @@ angular.module('vehicleSimulator', [])
 		                	dealership.address.stateCode + " " + 
 		                	dealership.address.zipcode;
 	
-		                addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, 21, 28, title); 
+		                addMarkerToMap(map, dealership.address.latitude, dealership.address.longitude, iconUrl, 21, 28, title, false); 
 		            }
 		            
 		            // only switch to dealers if the fuel situation is fine

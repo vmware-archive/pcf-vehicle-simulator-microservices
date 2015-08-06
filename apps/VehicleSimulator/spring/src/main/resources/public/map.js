@@ -45,7 +45,10 @@ function updateMap(latitude, longitude)
 	return map;
 } 
 
-function addMarkerToMap(map, lat, lng, iconUrl, iconSizeX, iconSizeY, title)
+var gasStationMarkers = [];
+var dealershipMarkers = [];
+
+function addMarkerToMap(map, lat, lng, iconUrl, iconSizeX, iconSizeY, title, isGasStation)
 {
     var latlng = new google.maps.LatLng ( lat, lng );
     
@@ -64,4 +67,36 @@ function addMarkerToMap(map, lat, lng, iconUrl, iconSizeX, iconSizeY, title)
     }
 
     var marker = new google.maps.Marker( markerOptions );
+    
+    if (isGasStation)
+    {
+    	console.debug("Adding marker to gas station array");
+    	gasStationMarkers.push(marker);
+    }
+    else
+    {
+    	console.debug("Adding marker to dealership array");
+    	dealershipMarkers.push(marker);
+    }    
+}
+
+function clearGasStationMarkers()
+{
+	removeMarkerArrayFromMap( gasStationMarkers );
+}
+
+function clearDealershipMarkers()
+{
+	removeMarkerArrayFromMap( dealershipMarkers );
+}
+
+function removeMarkerArrayFromMap( aMarkerArray )
+{
+	for(var i = 0;i < aMarkerArray.length; i++)
+	{
+		aMarkerArray[i].setMap(null);
+	}
+	
+	// clear the array
+	aMarkerArray = []; 
 }
