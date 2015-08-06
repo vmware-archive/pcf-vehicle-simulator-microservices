@@ -100,8 +100,7 @@ angular.module('vehicleSimulator', [])
 			else {
 				// clear the gas stations               		
 				$( "#gasStations thead").empty();
-				$( "#gasStations tbody").empty();   
-				$( "#gasStations tbody").append('<tr><td>No Information Available</td></tr>');   
+				$( "#gasStations tbody").empty();    
 				
 				clearGasStationMarkers();
 			}
@@ -152,7 +151,6 @@ angular.module('vehicleSimulator', [])
 			else {
 				// clear the dealerships
 				$( "#dealerships tbody").empty();
-				$( "#dealerships tbody").append('<tr><td>No Information Available</td></tr>');
 				
 				clearDealershipMarkers();
 			}
