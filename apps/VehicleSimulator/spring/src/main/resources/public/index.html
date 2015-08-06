@@ -135,6 +135,14 @@
 			    </div>
 		    </div>
 	  	</div>
+		<div class="row" style="width:95%;float:right;">
+		  		<div class="col-xs-2 buttons">
+		  			<button id="btnKillApp" type="button" class="btn btn-danger" title="Kill the Application" data-ng-click="killApp();">Kill The App</button>
+		  		</div>
+		  		<div class="col-xs-3" ng-init="ipAddress();">
+		  			IP Address: {{serverIpAddress}}
+		  		</div>		  		
+		  	</div>
 	</div>    
 
 	<div data-ng-include="'dealerModal.html'">

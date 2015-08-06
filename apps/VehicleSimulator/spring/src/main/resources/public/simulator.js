@@ -12,7 +12,9 @@ angular.module('vehicleSimulator', [])
 	    $scope.conditionClass = "alert-success";
 	    $scope.conditionStrongText = "Good Condition";
 	    $scope.conditionText = "Performing as expected";
-    
+	    $scope.serverIpAddress = "Unknown";
+	    $scope.boundToRabbitMQ = "Unknown";
+
 	    $scope.startTimer = function() {
 	        $( '#btnStart').prop("disabled",true);
 	        $( '#btnStop').prop("disabled", false);
@@ -183,8 +185,32 @@ angular.module('vehicleSimulator', [])
 		            }
 		            
 		        });
-		};		
-	    
+		};	
+		
+		$scope.killApp = function killApp()
+        {
+        	console.debug("Killing the app...");
+        	var theUrl = "map/killApp";
+        	
+        	$http.get(theUrl).
+        		success(function(data) {
+        			console.debug("The call to kill the app was successful");
+        	});
+        };
+        
+        $scope.ipAddress = function retrieveIpAddress()
+        {
+        	console.debug("Retrieving the server IP address")
+        	var theUrl = "map/ipAddress";
+        	console.debug("The url is " + theUrl);
+        	
+        	$http.get(theUrl).
+        		success(function(data) {
+        			console.debug("Success!. The ipAddress is " + data.ipAddress);
+        			$scope.serverIpAddress = data.ipAddress;
+        		});
+        }
+    	            
 }]);
     
 function activeTab(disabledId, activeId) {

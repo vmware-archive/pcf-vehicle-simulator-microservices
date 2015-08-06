@@ -10,6 +10,8 @@ import io.pivotal.demo.service.GeocodeClient;
 import io.pivotal.demo.service.RepairClient;
 import io.pivotal.demo.service.GasStationClient;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -76,6 +78,25 @@ public class MapController {
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		
 		return mapper.readValue(json, VehicleInfo.class);        
+    }
+    
+    @RequestMapping("/killApp")
+    public void killApp()
+    {
+    	System.exit(1);
+    }
+    
+    @RequestMapping("/ipAddress")
+    public @ResponseBody String serverIpAddress()
+    {
+    	try 
+    	{
+    		return "{ \"ipAddress\" : \"" + InetAddress.getLocalHost().getHostAddress() + "\"}";
+    	} 
+    	catch (UnknownHostException e) 
+    	{
+    		return "{ \"ipAddress\" : \"" + "Unknown/Error" + "\"}";
+		}
     }
 
 }
