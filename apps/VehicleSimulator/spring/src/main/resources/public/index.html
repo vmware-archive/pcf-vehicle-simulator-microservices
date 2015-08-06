@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="main.css">
 	</head>
 
-	<body data-ng-app="vehicleSimulator" data-ng-controller="VehicleSimulatorController">
+	<body data-ng-app="vehicleSimulator" data-ng-controller="VehicleSimulatorController" ng-init="getRabbitMqStatus();">
   	<div class="container logo">
 		<img src="ford_logo.png"/><label>Vehicle Simulator</label>
 	</div>
@@ -35,10 +35,10 @@
 					<div class="col-xs-4 alerts">
 						<div id="currentFuelCondition" class="alert {{conditionFuelClass}}" role="alert"><strong>{{conditionFuelStrongText}}</strong> - {{conditionFuelText}}</div>
 					</div>
-					<div class="col-xs-1 buttons">
+					<div class="col-xs-1 buttons" ng-show="haveRabbitConnection">
 						<button id="btnStart" type="button" class="btn btn-success" data-ng-click="startTimer()">Start</button>
 					</div>
-					<div class="col-xs-1 buttons">
+					<div class="col-xs-1 buttons" ng-show="haveRabbitConnection">
 						<button id="btnStop" type="button" class="btn btn-danger" data-ng-click="stopTimer();">Stop</button>
 				  	</div>
 				</div>
@@ -61,7 +61,7 @@
 			</div><!--/.nav-collapse -->
 		</div>
 	</nav>  	
-  	<div class="container">
+  	<div class="container" >
 		<div class="row main-content-row">
 			<div class="col-xs-6 vehicle-info-container">
 			    <div class="map-container">
@@ -143,7 +143,10 @@
 		  		</div>
 		  		<div class="col-xs-3" ng-init="ipAddress();">
 		  			IP Address: {{serverIpAddress}}
-		  		</div>		  		
+		  		</div>	
+		  		<div id="rabbitStatus" class="col-xs-3" role="alert">
+		  			Bound to Rabbit MQ?: {{ boundToRabbitMQ }}
+				</div>			  			  		
 		  	</div>
 	</div>    
 

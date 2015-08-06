@@ -14,6 +14,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -97,6 +99,27 @@ public class MapController {
     	{
     		return "{ \"ipAddress\" : \"" + "Unknown/Error" + "\"}";
 		}
+    }
+    
+    @RequestMapping("/haveRabbitConnection")
+    public @ResponseBody String haveRabbitMqConnection()
+    {
+    	Boolean haveRabbit = false;
+    	if (rabbitTemplate != null)
+    	{
+    		
+    		try
+    		{
+    			ConnectionFactory connectionFactory = rabbitTemplate.getConnectionFactory();
+    			connectionFactory.createConnection();
+    			haveRabbit = true;
+    		}
+    		catch(AmqpException ae)
+    		{
+    			haveRabbit = false;
+    		}
+    	}
+    	return "{ \"haveRabbitMqConnection\" : \"" + haveRabbit + "\"}";    	
     }
 
 }

@@ -14,6 +14,7 @@ angular.module('vehicleSimulator', [])
 	    resetServiceCondition();
 
 	    $scope.serverIpAddress = "Unknown";
+	    $scope.haveRabbitConnection = false;
 	    $scope.boundToRabbitMQ = "Unknown";
 
 	    $scope.startTimer = function() {
@@ -222,6 +223,20 @@ angular.module('vehicleSimulator', [])
         		success(function(data) {
         			console.debug("Success!. The ipAddress is " + data.ipAddress);
         			$scope.serverIpAddress = data.ipAddress;
+        		});
+        }
+        
+        $scope.getRabbitMqStatus = function retrieveBoundToRabbit()
+        {
+        	console.debug("Retrieving if we're bound to Rabbit");
+        	var theUrl = "map/haveRabbitConnection";
+        	console.debug("The url is " + theUrl);
+        	
+        	$http.get(theUrl).
+        		success(function(data) {
+        			console.debug("Success. BoundToRabbit? " + data.haveRabbitMqConnection);
+        			$scope.haveRabbitConnection = data.haveRabbitMqConnection == "true";
+        			$scope.boundToRabbitMQ = $scope.haveRabbitConnection ? "Yes" : "No";
         		});
         }
     	            
