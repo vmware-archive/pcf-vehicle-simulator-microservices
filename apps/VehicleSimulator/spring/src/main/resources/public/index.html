@@ -41,6 +41,10 @@
 					<div class="col-xs-1 buttons" ng-show="haveRabbitConnection">
 						<button id="btnStop" type="button" class="btn btn-danger" data-ng-click="stopTimer();">Stop</button>
 				  	</div>
+			  		<div class="col-xs-3 text-right buttons">
+			  			<button id="btnKillApp" type="button" class="btn btn-danger" title="Kill the Application" data-ng-click="killApp();">Kill The App</button>
+			  		</div>
+				  	
 				</div>
 				<div class="row">
 					<div class="col-xs-3">
@@ -56,6 +60,12 @@
 					<div class="col-xs-1 buttons">
 						<button id="btnResetService" type="button" class="btn btn-primary" title="Mark the vehicle as serviced" data-ng-click="serviceVehicle();">Service Vehicle</button>
 					</div>
+			  		<div class="col-xs-offset-1 col-xs-3 text-right" ng-init="ipAddress();">
+			  			IP Address: {{serverIpAddress}}
+				  		<div id="rabbitStatus" role="alert">
+				  			Bound to Rabbit MQ?: {{ boundToRabbitMQ }}
+						</div>			  			  		
+			  		</div>	
 				</div>
 				
 			</div><!--/.nav-collapse -->
@@ -137,17 +147,6 @@
 			    </div>
 		    </div>
 	  	</div>
-		<div class="row" style="width:95%;float:right;">
-		  		<div class="col-xs-2 buttons">
-		  			<button id="btnKillApp" type="button" class="btn btn-danger" title="Kill the Application" data-ng-click="killApp();">Kill The App</button>
-		  		</div>
-		  		<div class="col-xs-3" ng-init="ipAddress();">
-		  			IP Address: {{serverIpAddress}}
-		  		</div>	
-		  		<div id="rabbitStatus" class="col-xs-3" role="alert">
-		  			Bound to Rabbit MQ?: {{ boundToRabbitMQ }}
-				</div>			  			  		
-		  	</div>
 	</div>    
 
 	<div data-ng-include="'dealerModal.html'">

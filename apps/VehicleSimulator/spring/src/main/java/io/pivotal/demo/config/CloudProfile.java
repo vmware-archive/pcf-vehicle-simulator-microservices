@@ -13,19 +13,15 @@ import org.springframework.context.annotation.Profile;
 public class CloudProfile 
 {
 	@Bean
-	public CloudFactory cloudFactory()
+	public Cloud cloud()
 	{
-		return new CloudFactory();
+		return new CloudFactory().getCloud();
 	}
 	
 	@Bean
 	public ConnectionFactory connectionFactory()
 	{
-		CloudFactory cloudFactory = new CloudFactory();
-		Cloud cloud = cloudFactory.getCloud();
-		ConnectionFactory connectionFactory = cloud.getSingletonServiceConnector(ConnectionFactory.class, null);
-		
-		return connectionFactory;		
+		return cloud().getSingletonServiceConnector(ConnectionFactory.class, null);
 	}
 	
     @Bean
