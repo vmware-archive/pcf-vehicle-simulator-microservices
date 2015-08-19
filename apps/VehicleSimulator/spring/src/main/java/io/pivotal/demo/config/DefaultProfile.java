@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 @Profile("default")
 public class DefaultProfile 
 {
+		
 	@Bean
 	public ConnectionFactory connectionFactory()
 	{
