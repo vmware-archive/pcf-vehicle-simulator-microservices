@@ -1,0 +1,5 @@
+rabbitmq:
+    uri: tiger.cloudamqp.com
+    vhost: dzmmizcc
+    username: dzmmizcc
+    password: v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM
