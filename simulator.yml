@@ -3,5 +3,8 @@ rabbitmq:
     vhost: dzmmizcc
     username: dzmmizcc
     password: v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM
+<<<<<<< HEAD
     
    
+=======
+>>>>>>> branch 'master' of https://github.com/Pivotal-Field-Engineering/pcf-automotive-iot.git
