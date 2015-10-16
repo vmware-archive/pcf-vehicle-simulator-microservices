@@ -26,6 +26,6 @@ Now start the *Spring XD Shell* in a separate window:
 	
 In the *Spring XD shell*, create a new stream that reads data in `/tmp/openxc-input.json` performs a filter, and writes the results to your RabbitMQ queue:
 
-	stream create --name openxc-ingest --definition "http | rabbit --addresses='<rabbit server address>' --vhost='<rabbitmq virtual host>' --username='<rabbitmq username>' --password='<rabbitmq password>' --routingKey='\"vehicle-data-queue\"'" --deploy
+	stream create --name openxc-ingest --definition "http | rabbit --addresses='<Rabbit URL>' --vhost='<Rabbit Virtual Host>' --username='<Rabbit Username>' --password='<Rabbit Password>' --routingKey='\"vehicle-data-queue\"'" --deploy
   
 Once the stream is created, copy one of the sample input files to `/tmp/openxc-input.json`. Then, run the groovy script, OpenXCFileParser.groovy, found in apps/VehicleSimulator/scripts folder
