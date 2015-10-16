@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import io.pivotal.demo.Dealerships;
 
-@FeignClient("dealerships")
+@FeignClient(url="http://dealer-service.cfapps.io")
 public interface DealershipsClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{brand}/{postalCode}", consumes = "application/json")

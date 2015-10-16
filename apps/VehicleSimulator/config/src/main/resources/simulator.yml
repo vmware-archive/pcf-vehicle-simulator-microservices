@@ -3,3 +3,8 @@ rabbitmq:
     vhost: dzmmizcc
     username: dzmmizcc
     password: v-tY2b5xjrjqgkC3TJ9rbbHgyKOlZDSM
+    
+server:
+   port: 8081
+   
+   

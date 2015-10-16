@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import io.pivotal.demo.Geo;
 
-@FeignClient("geocode")
+@FeignClient(url="http://google-reverse-geocode-service.cfapps.io")
 public interface GeocodeClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{lat}/{lng}")

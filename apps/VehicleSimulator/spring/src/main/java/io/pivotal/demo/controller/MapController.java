@@ -12,6 +12,7 @@ import io.pivotal.demo.service.GasStationClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.amqp.AmqpException;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @Controller
 @RequestMapping("/map")
@@ -48,10 +50,20 @@ public class MapController {
     private RabbitTemplate rabbitTemplate;
     
     @RequestMapping("/dealershipOpenings")
+    @HystrixCommand(fallbackMethod = "defaultSchedule")
 	public @ResponseBody List<Schedule> dealershipOpenings(@RequestParam(required=true) Long dealerId) {
 		return repairClient.openings(dealerId);
 	} 
     
+	public @ResponseBody List<Schedule> defaultSchedule(@RequestParam(required=true) Long dealerId) {
+		List<Schedule> list = new ArrayList<Schedule>(1);
+		Schedule schedule = new Schedule();
+		schedule.setDuration("1 hour");
+		schedule.setStartTime("1 pm");
+		schedule.setDate("A week from next Monday");
+		list.add(schedule);
+		return list;
+	} 
     
 	// URL Example: /nearestGasStationsWithPrices?lat=42.221786&lng=-83.414139&distance=5
     @RequestMapping(value = "/nearestGasStationsWithPrices")

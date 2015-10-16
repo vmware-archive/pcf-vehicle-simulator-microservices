@@ -9,7 +9,7 @@ import io.pivotal.demo.Schedule;
 
 import java.util.List;
 
-@FeignClient("openings")
+@FeignClient("RepairService")
 public interface RepairClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/ServiceOpenings/${dealerId}")
