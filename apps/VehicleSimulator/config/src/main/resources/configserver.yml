@@ -3,3 +3,4 @@ spring:
      name: simulatorConfigServer
   profiles:
      active: native
+         
